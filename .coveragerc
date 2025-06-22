@@ -1,0 +1,5 @@
+[run]
+source = msstools
+
+[report]
+precision = 2
