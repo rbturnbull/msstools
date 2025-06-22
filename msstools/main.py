@@ -80,3 +80,16 @@ def number_sentences(
     output_data = number_sentences(input_data)
     Path(output_file).write_text(output_data, encoding='utf-8')
 
+
+@app.command()
+def count_greek_chars(
+    paths:list[Path] = typer.Argument(..., help="Paths to text files to count Greek characters"),
+    warning_stds:float = typer.Option(1.8, help="Standard deviation threshold for warnings"),
+    output_path:Path = typer.Option(None, help="Path to save the output plot"),
+    show:bool = typer.Option(False, help="Show the plot in a window"),
+):
+    """
+    Count Greek characters in text files and generate a plot.
+    """
+    from msstools.count import count_greek_chars
+    count_greek_chars(paths, warning_stds, output_path, show)
