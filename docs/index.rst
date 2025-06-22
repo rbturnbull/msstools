@@ -10,14 +10,13 @@ Welcome to MSS Tools's documentation!
    :start-after: start-badges
    :end-before: end-badges
 
-Tools for Managing the Manuscripts of Chrysostom’s
+Tools for Managing the Manuscripts of Chrysostom’s Homilies on Romans
 
 .. toctree::
    :maxdepth: 2
    :caption: Contents:
 
    quickstart
-   api
    cli
    credits
 
