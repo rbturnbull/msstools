@@ -1,8 +1,11 @@
 from collections import Counter, defaultdict
 from pathlib import Path
+import re
 import regex
 import numpy as np
 import matplotlib.pyplot as plt
+import svgwrite
+
 
 def greek_char_count(string:str) -> int:
     """Counts the number of Greek characters in a given string."""
@@ -10,9 +13,21 @@ def greek_char_count(string:str) -> int:
     return len(chars)
 
 
+def try_open_file( filenames ):
+    broken = []
+    for filename in filenames:
+        try:
+            f = open(filename, 'r')
+            return f, Path(filename).name
+        except:
+            broken.append(filename)
+    return None, ''
+
+
 def count_greek_chars(
-    paths:list[str|Path],
-    warning_stds:float = 1.8,
+    filename_prefix:str,
+    homily_count:int,
+    warning_stdev:float = 1.8,
     output_path:Path|None = None,
     show:bool = False,
 ):
@@ -22,38 +37,42 @@ def count_greek_chars(
     current_page = "Unk"
     current_folio = None
     current_side = None
-    for path in paths:
-        with open(path, 'r', encoding='utf-8') as f:
-            filename = Path(path).name
-            current_filename = filename
+    for homily_index in range(homily_count + 1):
+        filename = "%s%d" % (filename_prefix, homily_index)
+        filename_leadingzero = "%s0%d" % (filename_prefix, homily_index)
+        
+        f, current_filename = try_open_file( [ filename, filename_leadingzero, filename + ".txt", filename_leadingzero + ".txt"])
+        if not f:
+            print("Cannot open", filename)
+            continue
 
-            for line in f:
-                line = line.strip()
+        for line in f:
+            line = line.strip()
+            
+            # Check for change of page, e.g.:
+            #        |F 71bv|
+            match = regex.match(r"\|F (\d+)([vrabcp]+)\|", line)
+            if match:
+                folio = match.group(1)
+                side = match.group(2)
+                page = folio + side
                 
-                # Check for change of page, e.g.:
-                #        |F 71bv|
-                match = regex.match(r"\|F (\d+)([vrabcp]+)\|", line)
-                if match:
-                    folio = match.group(1)
-                    side = match.group(2)
-                    page = folio + side
-                    
-                    if current_folio:
-                        if folio != current_folio and int(folio) != int(current_folio) + 1:
-                            print("Folio error from %s to %s in file %s ?" % (current_page, page, current_filename) )
-                        if folio != current_folio and side == current_side and side != 'p':
-                            print("Folio side error from %s to %s in file %s ?" % (current_page, page, current_filename) )
-                        elif folio != current_folio and side != 'r' and side != 'p':
-                            print("Folio side error from %s to %s in file %s ?" % (current_page, page, current_filename) )
-                                
-                    current_page = page
-                    current_folio = folio
-                    current_side = side
-                    page_to_file_dict[current_page] = current_filename
-                    
-                char_count = greek_char_count(line)
-                if char_count:
-                    page_char_counts[current_page] += greek_char_count(line)
+                if current_folio:
+                    if folio != current_folio and int(folio) != int(current_folio) + 1:
+                        print("Folio error from %s to %s in file %s ?" % (current_page, page, current_filename) )
+                    if folio != current_folio and side == current_side and side != 'p':
+                        print("Folio side error from %s to %s in file %s ?" % (current_page, page, current_filename) )
+                    elif folio != current_folio and side != 'r' and side != 'p':
+                        print("Folio side error from %s to %s in file %s ?" % (current_page, page, current_filename) )
+                            
+                current_page = page
+                current_folio = folio
+                current_side = side
+                page_to_file_dict[current_page] = current_filename
+                
+            char_count = greek_char_count(line)
+            if char_count:
+                page_char_counts[current_page] += greek_char_count(line)
 
 
     plt.figure(figsize=(20,10))
@@ -67,7 +86,7 @@ def count_greek_chars(
     print("Outlier Pages:")
     warning_labels = []
     for item in page_char_counts:
-        if page_char_counts[item] > mean + warning_stds*std or page_char_counts[item] < mean - warning_stds*std:
+        if page_char_counts[item] > mean + warning_stdev*std or page_char_counts[item] < mean - warning_stdev*std:
             print(item, page_char_counts[item], page_to_file_dict[item], sep='\t\t')
             warning_labels.append( item )
 
@@ -110,3 +129,118 @@ def count_greek_chars(
 
             
             
+def read_sentence_counts( filename_prefix, start_homily = 0, end_homily = 32 ):
+	sentence_counts = defaultdict( lambda: defaultdict(lambda: defaultdict(int)))
+
+	for homily_index in range(start_homily, end_homily+1):
+		homily_index = int(homily_index)
+		filename = "%s%d" % (filename_prefix, homily_index)
+		filename_leadingzero = "%s0%d" % (filename_prefix, homily_index)
+	
+		f, current_filename = try_open_file( [ filename, filename_leadingzero, filename + ".txt", filename_leadingzero + ".txt"])
+		if not f:
+			print("Cannot open", filename)
+			continue
+
+		data = f.read()
+
+		paragraphs = re.findall("\<P ([0-9]+)\>(.*?)\<\/P\>", data, re.MULTILINE|re.DOTALL)
+		for paragraph in paragraphs:
+			paragraph_number = int(paragraph[0])
+			paragraph_text = paragraph[1]
+
+			sentences = re.findall("\<S ([0-9]+)\>(.*?)\<\/S\>", paragraph_text, re.MULTILINE|re.DOTALL)
+			for sentence in sentences:
+				sentence_number = int(sentence[0])
+				sentence_counts[homily_index][paragraph_number][sentence_number] = greek_char_count(sentence[1].strip())
+
+	return sentence_counts
+
+
+def length_dict_dataframe( sentence_counts ):
+	count = 0
+	for h in sentence_counts:
+		for p in sentence_counts[h]:
+			for s in sentence_counts[h][p]:
+				count +=1
+	return count
+
+
+def print_dict_dataframe( sentence_counts ):
+	for h in sentence_counts:
+		for p in sentence_counts[h]:
+			for s in sentence_counts[h][p]:
+				if sentence_counts[h][p][s] == 0:
+					print(h, p, s,"zero")						
+				else:
+					print(h, p, s, sentence_counts[h][p][s])	
+
+
+def compare_dataframes( sentence_counts_base,  sentence_counts_comparison, threshold):
+	for h in sentence_counts_base:
+		if h not in sentence_counts_comparison:
+			print("Homily %s not found in comparison text." % h )
+			continue
+		for p in sentence_counts_base[h]:
+			if p not in sentence_counts_comparison[h]:
+				print("Paragraph %s.%s not found in comparison text." % (h,p) )
+				continue		
+			for s in sentence_counts_base[h][p]:
+				if s not in sentence_counts_comparison[h][p]:
+					print("Sentence %s.%s.%s not found in comparison text." % (h,p,s) )
+					continue
+				# ignore if the base text is empty				
+				if sentence_counts_base[h][p][s] == 0:
+					continue
+				if sentence_counts_comparison[h][p][s] == 0:
+					print("Sentence %s.%s.%s is empty in comparison text." % (h,p,s) )
+				
+				
+				if sentence_counts_comparison[h][p][s] > sentence_counts_base[h][p][s] + threshold:
+					print("Sentence %s.%s.%s above the threshold." % (h,p,s) )
+
+
+def write_square( dwg, position, colour, size=1 , height=10):
+	dwg.add(dwg.rect( (position*size, 0), ( (position+1) * size, height ), fill=colour ))
+
+
+def svg_dataframes( sentence_counts_base,  sentence_counts_comparison, threshold, filename, size=1, height=10):
+	count = length_dict_dataframe(sentence_counts_base)
+	dwg = svgwrite.Drawing(filename, size=(count*size,height), profile='tiny')
+	
+	position = 0
+	for h in sentence_counts_base:
+		for p in sentence_counts_base[h]:
+			for s in sentence_counts_base[h][p]:
+				# ignore if the base text is empty				
+				if sentence_counts_base[h][p][s] == 0:
+					continue
+				colour = ""
+				if h not in sentence_counts_comparison or p not in sentence_counts_comparison[h] or s not in sentence_counts_comparison[h][p]:
+					colour = "black"
+				elif sentence_counts_comparison[h][p][s] == 0:
+					colour = "red"
+				elif sentence_counts_comparison[h][p][s] > sentence_counts_base[h][p][s] + threshold:
+					colour = "blue"
+				else:
+					colour = "green"
+
+				write_square( dwg, position, colour, size)
+				position += size
+				
+	dwg.save()            
+	
+
+def compare_counts(base_prefix:str, comparison_prefix, start_homily:int=0, end_homily=32, threshold:int=50):
+    print("Reading Base:")
+    sentence_counts_base = read_sentence_counts(base_prefix, start_homily, end_homily)
+
+    count = length_dict_dataframe(sentence_counts_base)
+    print('Base Sentence Count:', count)
+
+    print("Reading Comparison:")
+    sentence_counts_comparison = read_sentence_counts(comparison_prefix, start_homily, end_homily)
+
+    print("Checking:")
+    compare_dataframes( sentence_counts_base, sentence_counts_comparison, threshold)
+    svg_dataframes(sentence_counts_base, sentence_counts_comparison, threshold,  f"{comparison_prefix}.svg")
