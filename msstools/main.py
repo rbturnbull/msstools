@@ -7,18 +7,6 @@ import typer
 app = typer.Typer()
 
 @app.command()
-def remove_accents(
-    input_file: Path = typer.Argument(..., help="Path to the input file"),
-    output_file: Path = typer.Argument(..., help="Path to the output file"),
-):
-    """
-    Remove accents from a text file.
-    """
-    from msstools.strings import remove_accents_from_file
-    remove_accents_from_file(input_file, output_file)
-
-
-@app.command()
 def split_image(
     prefix: Path = typer.Argument(..., help="Path to the image file to be split"),
     images: list[Path] = typer.Argument(..., help="List of image files to be split"),
@@ -65,4 +53,30 @@ def split_image(
                 verso_img.save(verso_path)
             if not recto_path.exists() or force:
                 recto_img.save(recto_path)
+
+
+@app.command()
+def remove_accents(
+    input_file: Path = typer.Argument(..., help="Path to the input file"),
+    output_file: Path = typer.Argument(..., help="Path to the output file"),
+):
+    """
+    Remove accents from a text file.
+    """
+    from msstools.strings import remove_accents_from_file
+    remove_accents_from_file(input_file, output_file)
+
+
+@app.command()
+def number_sentences(
+    input_file: Path = typer.Argument(..., help="Path to the input file"),
+    output_file: Path = typer.Argument(..., help="Path to the output file"),
+):
+    """
+    Number <S> sentence tags within <P> blocks in a text file.
+    """
+    from msstools.number import number_sentences
+    input_data = Path(input_file).read_text(encoding='utf-8')
+    output_data = number_sentences(input_data)
+    Path(output_file).write_text(output_data, encoding='utf-8')
 
