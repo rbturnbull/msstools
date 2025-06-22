@@ -43,7 +43,7 @@ See available commands with:
 
 .. code-block:: bash
 
-    msstools-tools --help
+    msstools --help
 
 .. end-quickstart
 
