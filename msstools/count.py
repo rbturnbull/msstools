@@ -130,108 +130,98 @@ def count_greek_chars(
             
             
 def read_sentence_counts( filename_prefix, start_homily = 0, end_homily = 32 ):
-	sentence_counts = defaultdict( lambda: defaultdict(lambda: defaultdict(int)))
+    sentence_counts = defaultdict( lambda: defaultdict(lambda: defaultdict(int)))
 
-	for homily_index in range(start_homily, end_homily+1):
-		homily_index = int(homily_index)
-		filename = "%s%d" % (filename_prefix, homily_index)
-		filename_leadingzero = "%s0%d" % (filename_prefix, homily_index)
-	
-		f, current_filename = try_open_file( [ filename, filename_leadingzero, filename + ".txt", filename_leadingzero + ".txt"])
-		if not f:
-			print("Cannot open", filename)
-			continue
+    for homily_index in range(start_homily, end_homily+1):
+        homily_index = int(homily_index)
+        filename = "%s%d" % (filename_prefix, homily_index)
+        filename_leadingzero = "%s0%d" % (filename_prefix, homily_index)
+    
+        f, current_filename = try_open_file( [ filename, filename_leadingzero, filename + ".txt", filename_leadingzero + ".txt"])
+        if not f:
+            print("Cannot open", filename)
+            continue
 
-		data = f.read()
+        data = f.read()
 
-		paragraphs = re.findall("\<P ([0-9]+)\>(.*?)\<\/P\>", data, re.MULTILINE|re.DOTALL)
-		for paragraph in paragraphs:
-			paragraph_number = int(paragraph[0])
-			paragraph_text = paragraph[1]
+        paragraphs = re.findall("\<P ([0-9]+)\>(.*?)\<\/P\>", data, re.MULTILINE|re.DOTALL)
+        for paragraph in paragraphs:
+            paragraph_number = int(paragraph[0])
+            paragraph_text = paragraph[1]
 
-			sentences = re.findall("\<S ([0-9]+)\>(.*?)\<\/S\>", paragraph_text, re.MULTILINE|re.DOTALL)
-			for sentence in sentences:
-				sentence_number = int(sentence[0])
-				sentence_counts[homily_index][paragraph_number][sentence_number] = greek_char_count(sentence[1].strip())
+            sentences = re.findall("\<S ([0-9]+)\>(.*?)\<\/S\>", paragraph_text, re.MULTILINE|re.DOTALL)
+            for sentence in sentences:
+                sentence_number = int(sentence[0])
+                sentence_counts[homily_index][paragraph_number][sentence_number] = greek_char_count(sentence[1].strip())
 
-	return sentence_counts
+    return sentence_counts
 
 
 def length_dict_dataframe( sentence_counts ):
-	count = 0
-	for h in sentence_counts:
-		for p in sentence_counts[h]:
-			for s in sentence_counts[h][p]:
-				count +=1
-	return count
-
-
-def print_dict_dataframe( sentence_counts ):
-	for h in sentence_counts:
-		for p in sentence_counts[h]:
-			for s in sentence_counts[h][p]:
-				if sentence_counts[h][p][s] == 0:
-					print(h, p, s,"zero")						
-				else:
-					print(h, p, s, sentence_counts[h][p][s])	
+    count = 0
+    for h in sentence_counts:
+        for p in sentence_counts[h]:
+            for s in sentence_counts[h][p]:
+                count +=1
+    return count
 
 
 def compare_dataframes( sentence_counts_base,  sentence_counts_comparison, threshold):
-	for h in sentence_counts_base:
-		if h not in sentence_counts_comparison:
-			print("Homily %s not found in comparison text." % h )
-			continue
-		for p in sentence_counts_base[h]:
-			if p not in sentence_counts_comparison[h]:
-				print("Paragraph %s.%s not found in comparison text." % (h,p) )
-				continue		
-			for s in sentence_counts_base[h][p]:
-				if s not in sentence_counts_comparison[h][p]:
-					print("Sentence %s.%s.%s not found in comparison text." % (h,p,s) )
-					continue
-				# ignore if the base text is empty				
-				if sentence_counts_base[h][p][s] == 0:
-					continue
-				if sentence_counts_comparison[h][p][s] == 0:
-					print("Sentence %s.%s.%s is empty in comparison text." % (h,p,s) )
-				
-				
-				if sentence_counts_comparison[h][p][s] > sentence_counts_base[h][p][s] + threshold:
-					print("Sentence %s.%s.%s above the threshold." % (h,p,s) )
+    for h in sentence_counts_base:
+        if h not in sentence_counts_comparison:
+            print("Homily %s not found in comparison text." % h )
+            continue
+        for p in sentence_counts_base[h]:
+            if p not in sentence_counts_comparison[h]:
+                print("Paragraph %s.%s not found in comparison text." % (h,p) )
+                continue        
+            for s in sentence_counts_base[h][p]:
+                if s not in sentence_counts_comparison[h][p]:
+                    print("Sentence %s.%s.%s not found in comparison text." % (h,p,s) )
+                    continue
+                # ignore if the base text is empty                
+                if sentence_counts_base[h][p][s] == 0:
+                    continue
+                if sentence_counts_comparison[h][p][s] == 0:
+                    print("Sentence %s.%s.%s is empty in comparison text." % (h,p,s) )
+                
+                
+                if sentence_counts_comparison[h][p][s] > sentence_counts_base[h][p][s] + threshold:
+                    print("Sentence %s.%s.%s above the threshold." % (h,p,s) )
 
 
 def write_square( dwg, position, colour, size=1 , height=10):
-	dwg.add(dwg.rect( (position*size, 0), ( (position+1) * size, height ), fill=colour ))
+    dwg.add(dwg.rect( (position*size, 0), ( (position+1) * size, height ), fill=colour ))
 
 
 def svg_dataframes( sentence_counts_base,  sentence_counts_comparison, threshold, filename, size=1, height=10):
-	count = length_dict_dataframe(sentence_counts_base)
-	dwg = svgwrite.Drawing(filename, size=(count*size,height), profile='tiny')
-	
-	position = 0
-	for h in sentence_counts_base:
-		for p in sentence_counts_base[h]:
-			for s in sentence_counts_base[h][p]:
-				# ignore if the base text is empty				
-				if sentence_counts_base[h][p][s] == 0:
-					continue
-				colour = ""
-				if h not in sentence_counts_comparison or p not in sentence_counts_comparison[h] or s not in sentence_counts_comparison[h][p]:
-					colour = "black"
-				elif sentence_counts_comparison[h][p][s] == 0:
-					colour = "red"
-				elif sentence_counts_comparison[h][p][s] > sentence_counts_base[h][p][s] + threshold:
-					colour = "blue"
-				else:
-					colour = "green"
+    count = length_dict_dataframe(sentence_counts_base)
+    dwg = svgwrite.Drawing(filename, size=(count*size,height), profile='tiny')
+    
+    position = 0
+    for h in sentence_counts_base:
+        for p in sentence_counts_base[h]:
+            for s in sentence_counts_base[h][p]:
+                # ignore if the base text is empty                
+                if sentence_counts_base[h][p][s] == 0:
+                    continue
+                colour = ""
+                if h not in sentence_counts_comparison or p not in sentence_counts_comparison[h] or s not in sentence_counts_comparison[h][p]:
+                    colour = "black"
+                elif sentence_counts_comparison[h][p][s] == 0:
+                    colour = "red"
+                elif sentence_counts_comparison[h][p][s] > sentence_counts_base[h][p][s] + threshold:
+                    colour = "blue"
+                else:
+                    colour = "green"
 
-				write_square( dwg, position, colour, size)
-				position += size
-				
-	dwg.save()            
-	
+                write_square( dwg, position, colour, size)
+                position += size
+                
+    dwg.save()            
+    
 
-def compare_counts(base_prefix:str, comparison_prefix, start_homily:int=0, end_homily=32, threshold:int=50):
+def compare_counts(base_prefix:str, comparison_prefix:str, output_path:Path, start_homily:int=0, end_homily=32, threshold:int=50):
     print("Reading Base:")
     sentence_counts_base = read_sentence_counts(base_prefix, start_homily, end_homily)
 
@@ -243,4 +233,4 @@ def compare_counts(base_prefix:str, comparison_prefix, start_homily:int=0, end_h
 
     print("Checking:")
     compare_dataframes( sentence_counts_base, sentence_counts_comparison, threshold)
-    svg_dataframes(sentence_counts_base, sentence_counts_comparison, threshold,  f"{comparison_prefix}.svg")
+    svg_dataframes(sentence_counts_base, sentence_counts_comparison, threshold,  output_path)

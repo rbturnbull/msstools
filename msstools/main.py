@@ -58,20 +58,21 @@ def count_greek_chars(
     filename_prefix:str = typer.Argument(..., help="Prefix for the output files"),
     homily_count:int = typer.Argument(..., help="Number of homilies to process"),
     warning_stdev:float = typer.Option(1.8, help="Standard deviation threshold for warnings"),
-    output_path:Path = typer.Option(None, help="Path to save the output plot"),
+    output:Path = typer.Option(None, help="Path to save the output plot"),
     show:bool = typer.Option(False, help="Show the plot in a window"),
 ):
     """
     Count Greek characters in text files and generate a plot.
     """
     from msstools.count import count_greek_chars
-    count_greek_chars(filename_prefix, homily_count, warning_stdev, output_path, show)
+    count_greek_chars(filename_prefix, homily_count, warning_stdev, output, show)
 
 
 @app.command()
 def compare_counts(
     base_prefix:str = typer.Argument(..., help="The prefix for files of the base text."),
     comparison_prefix:str = typer.Argument(..., help="The prefix for files of the comparison text."),
+    output_path:Path = typer.Argument(..., help="Path to save the output plot."),
     start_homily:int= typer.Option(0, help="The number of the homily to start with."),
     end_homily:int = typer.Option(32, help="The number of the homily to end with."),
     threshold:int = typer.Option(50, help="The number of characters which the comparison text sentence can be above the base text sentence before triggering the warning indication."),
@@ -81,6 +82,7 @@ def compare_counts(
     compare_counts(
         base_prefix=base_prefix,
         comparison_prefix=comparison_prefix,
+        output_path=output_path,
         start_homily=start_homily,
         end_homily=end_homily,
         threshold=threshold,

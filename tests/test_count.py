@@ -45,7 +45,7 @@ def test_count_greek_chars_cli(tmp_path):
         "count-greek-chars",
         str(TEST_DATA/"X264-H"), 
         "1", 
-        "--output-path", str(plot_path)
+        "--output", str(plot_path)
     ])
     assert result.exit_code == 0
     assert plot_path.exists()
@@ -62,3 +62,21 @@ def test_folio_errors_are_detected(tmp_path, capsys):
 
     captured = capsys.readouterr()
     assert "Folio error from 1r to 3v in file weird_sequence0.txt" in captured.out
+
+
+
+def test_compare_counts(tmp_path):
+
+    output_path = tmp_path / "comparison_plot.svg"
+    result = runner.invoke(app, [
+        "compare-counts",
+        str(TEST_DATA/"Base-H"), 
+        str(TEST_DATA/"X264-H"), 
+        str(output_path),
+        "--start-homily", "0",
+        "--end-homily", "1",
+    ])
+    assert result.exit_code == 0
+    assert output_path.exists()
+    output_svg = output_path.read_text(encoding='utf-8')
+    assert '<?xml version="1.0" encoding="utf-8" ?>\n<svg baseProfile="tiny"' in output_svg
