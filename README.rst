@@ -4,7 +4,7 @@ MSS Tools
 
 .. start-badges
 
-|testing badge| |coverage badge| |docs badge| |black badge| |torchapp badge|
+|testing badge| |coverage badge| |docs badge| |black badge|
 
 .. |testing badge| image:: https://github.com/rbturnbull/msstools/actions/workflows/testing.yml/badge.svg
     :target: https://github.com/rbturnbull/msstools/actions
@@ -23,7 +23,7 @@ MSS Tools
 .. start-quickstart
 
 Tools for Managing the Manuscripts of Chrysostom’s Homilies on Romans
-================================================================
+
 
 Installation
 ==================================
