@@ -17,7 +17,6 @@ Tools for Managing the Manuscripts of Chrysostom’s Homilies on Romans
    :caption: Contents:
 
    quickstart
-   cli
    credits
 
 Indices and tables

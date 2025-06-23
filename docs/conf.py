@@ -19,8 +19,8 @@ sys.path.insert(0, os.path.abspath(".."))
 # -- Project information -----------------------------------------------------
 
 project = "MSS Tools"
-copyright = "2022, Homilies on Romans"
-author = "Homilies on Romans"
+copyright = "2022–2025, Robert Turnbull"
+author = "Robert Turnbull"
 
 # The full version, including alpha/beta/rc tags
 release = "0.1.0"
