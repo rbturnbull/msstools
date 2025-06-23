@@ -28,7 +28,7 @@ def test_count_greek_chars_function(tmp_path):
         "|F 2r|\nκαὶ λόγος λόγος λόγος\n|F 2v|\nno greek here\n",
         encoding="utf-8"
     )
-    output_path = tmp_path / "plot.png"
+    output_path = tmp_path / "dummy" / "plot.png"
 
     count_greek_chars(str(file1)[:-5], 2, warning_stdev=1.0, output_path=output_path, show=False)
 
@@ -48,6 +48,10 @@ def test_count_greek_chars_cli(tmp_path):
         "--output", str(plot_path)
     ])
     assert result.exit_code == 0
+    stdout = result.stdout.strip()
+    assert "Mean:                41.0" in stdout
+    assert "Standard Deviation:  56.1" in stdout
+    assert 'Folio side error from 72r to 73r in file X264-H0.txt' in stdout
     assert plot_path.exists()
 
 
