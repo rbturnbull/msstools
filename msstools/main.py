@@ -91,11 +91,12 @@ def compare_counts(
 
 @app.command()
 def csv_to_tei(
-    input_csv:Path=typer.Argument(..., help=""),
-    output_xml:Path=typer.Argument(..., help=""),
-    dates:Path=typer.Option(None, help=""),
-    max_readings:int=typer.Option(0, help=""),
+    input_csv:Path=typer.Argument(..., help="The path to the input CSV file containing readings."),
+    output_xml:Path=typer.Argument(..., help="The path to the output XML file."),
+    dates:Path=typer.Option(None, help="Optional path to a file containing dates."),
+    max_readings:int=typer.Option(0, help="Maximum number of readings to process at each variation unit."),
 ):
+    """ Convert a CSV file of readings into TEI XML format."""
     from msstools.tei import csv_to_tei
 
     csv_to_tei(
