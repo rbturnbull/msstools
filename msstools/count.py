@@ -38,9 +38,9 @@ def count_greek_chars(
     current_folio = None
     current_side = None
     for homily_index in range(homily_count + 1):
-        filename = "%s%d" % (filename_prefix, homily_index)
-        filename_leadingzero = "%s0%d" % (filename_prefix, homily_index)
-        
+        filename = f"{filename_prefix}{homily_index}"
+        filename_leadingzero = f"{filename_prefix}0{homily_index}"
+
         f, current_filename = try_open_file( [ filename, filename_leadingzero, filename + ".txt", filename_leadingzero + ".txt"])
         if not f:
             print("Cannot open", filename)
@@ -59,11 +59,11 @@ def count_greek_chars(
                 
                 if current_folio:
                     if folio != current_folio and int(folio) != int(current_folio) + 1:
-                        print("Folio error from %s to %s in file %s ?" % (current_page, page, current_filename) )
+                        print(f"Folio error from {current_page} to {page} in file {current_filename} ?")
                     if folio != current_folio and side == current_side and side != 'p':
-                        print("Folio side error from %s to %s in file %s ?" % (current_page, page, current_filename) )
+                        print(f"Folio side error from {current_page} to {page} in file {current_filename} ?")
                     elif folio != current_folio and side != 'r' and side != 'p':
-                        print("Folio side error from %s to %s in file %s ?" % (current_page, page, current_filename) )
+                        print(f"Folio side error from {current_page} to {page} in file {current_filename} ?")
                             
                 current_page = page
                 current_folio = folio
@@ -80,8 +80,9 @@ def count_greek_chars(
     vals = list(page_char_counts.values())
     mean = np.mean(vals)
     std = np.std(vals)
-    print("Mean:                %.1f" % mean)
-    print("Standard Deviation:  %.1f" % std)
+    print(f"Mean:                {mean:.1f}")
+    print(f"Standard Deviation:  {std:.1f}")
+
 
     print("Outlier Pages:")
     warning_labels = []
@@ -134,10 +135,10 @@ def read_sentence_counts( filename_prefix, start_homily = 0, end_homily = 32 ):
 
     for homily_index in range(start_homily, end_homily+1):
         homily_index = int(homily_index)
-        filename = "%s%d" % (filename_prefix, homily_index)
-        filename_leadingzero = "%s0%d" % (filename_prefix, homily_index)
+        filename = f"{filename_prefix}{homily_index}"
+        filename_leadingzero = f"{filename_prefix}0{homily_index}"
     
-        f, current_filename = try_open_file( [ filename, filename_leadingzero, filename + ".txt", filename_leadingzero + ".txt"])
+        f, _ = try_open_file( [ filename, filename_leadingzero, filename + ".txt", filename_leadingzero + ".txt"])
         if not f:
             print("Cannot open", filename)
             continue
@@ -166,28 +167,27 @@ def length_dict_dataframe( sentence_counts ):
     return count
 
 
-def compare_dataframes( sentence_counts_base,  sentence_counts_comparison, threshold):
+def compare_dataframes(sentence_counts_base, sentence_counts_comparison, threshold):
     for h in sentence_counts_base:
         if h not in sentence_counts_comparison:
-            print("Homily %s not found in comparison text." % h )
+            print(f"Homily {h} not found in comparison text.")
             continue
         for p in sentence_counts_base[h]:
             if p not in sentence_counts_comparison[h]:
-                print("Paragraph %s.%s not found in comparison text." % (h,p) )
+                print(f"Paragraph {h}.{p} not found in comparison text.")
                 continue        
             for s in sentence_counts_base[h][p]:
                 if s not in sentence_counts_comparison[h][p]:
-                    print("Sentence %s.%s.%s not found in comparison text." % (h,p,s) )
+                    print(f"Sentence {h}.{p}.{s} not found in comparison text.")
                     continue
                 # ignore if the base text is empty                
                 if sentence_counts_base[h][p][s] == 0:
                     continue
                 if sentence_counts_comparison[h][p][s] == 0:
-                    print("Sentence %s.%s.%s is empty in comparison text." % (h,p,s) )
-                
+                    print(f"Sentence {h}.{p}.{s} is empty in comparison text.")
                 
                 if sentence_counts_comparison[h][p][s] > sentence_counts_base[h][p][s] + threshold:
-                    print("Sentence %s.%s.%s above the threshold." % (h,p,s) )
+                    print(f"Sentence {h}.{p}.{s} above the threshold.")
 
 
 def write_square( dwg, position, colour, size=1 , height=10):
