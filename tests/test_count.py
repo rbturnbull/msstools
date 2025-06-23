@@ -43,7 +43,7 @@ def test_count_greek_chars_cli(tmp_path):
 
     result = runner.invoke(app, [
         "count-greek-chars",
-        str(TEST_DATA/"Homily"), 
+        str(TEST_DATA/"X264-H"), 
         "1", 
         "--output-path", str(plot_path)
     ])
