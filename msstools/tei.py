@@ -8,15 +8,13 @@ def csv_to_tei(input_csv:Path, output_xml:Path, dates:Path|None=None, max_readin
     titleStmt = ET.SubElement(fileDesc, 'titleStmt')
     respStmt = ET.SubElement(titleStmt, 'respStmt')
     resp = ET.SubElement(respStmt, 'resp')
-    resp.text = "Edited by:"
-    ET.SubElement(resp, 'name').text = "Peter Montoro"
-    ET.SubElement(resp, 'name').text = "Robert Turnbull"
+    resp.text = "Collated using msstools"
 
     publicationStmt = ET.SubElement(fileDesc, 'publicationStmt')
     ET.SubElement(publicationStmt, 'p').text = "Not for distribution."
 
     sourceDesc = ET.SubElement(fileDesc, 'sourceDesc')
-    ET.SubElement(sourceDesc, 'p').text = "Collated using dcodex."
+    ET.SubElement(sourceDesc, 'p').text = f"Derived from `{input_csv.name}`"
 
     listWit = ET.SubElement(sourceDesc, 'listWit')
 
@@ -51,6 +49,7 @@ def csv_to_tei(input_csv:Path, output_xml:Path, dates:Path|None=None, max_readin
                 end = str(int(row[2]))
                 dates_dict[siglum] = (start, end)
 
+    all_witnesses = sorted(all_witnesses)
     for siglum in all_witnesses:
         witness = ET.SubElement(listWit, 'witness', n=siglum)
         if dates:

@@ -1,0 +1,27 @@
+from pathlib import Path
+from PIL import Image
+from typer.testing import CliRunner
+from msstools.main import app 
+
+TEST_DATA = Path(__file__).parent/"testdata"
+
+
+runner = CliRunner()
+
+def test_csv_to_tei(tmp_path):
+    output_file = tmp_path / "output-tei.xml"
+    result = runner.invoke(app, [
+        "csv-to-tei",
+        str(TEST_DATA/"demo-readings.csv"),
+        str(output_file),
+    ])
+    assert result.exit_code == 0
+    
+    assert output_file.exists()
+    output_data = output_file.read_text()
+    assert output_data.startswith('<TEI xmlns="http://www.tei-c.org/ns/1.0">\n\t<teiHeader>')
+    assert '<p>Derived from `demo-readings.csv`</p>' in output_data
+    assert '<rdg wit="B C D">1</rdg>' in output_data
+    assert '<listWit>\n\t\t\t\t\t<witness n="A" />' in output_data
+
+

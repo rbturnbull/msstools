@@ -90,7 +90,7 @@ def compare_counts(
 @app.command()
 def csv_to_tei(
     input_csv:Path=typer.Argument(..., help=""),
-    output_xml:Path=typer.Argumenmt(..., help=""),
+    output_xml:Path=typer.Argument(..., help=""),
     dates:Path=typer.Option(None, help=""),
     max_readings:int=typer.Option(0, help=""),
 ):
