@@ -3,20 +3,21 @@ import shutil
 from PIL import Image
 
 
-def split_image(
+def split_images(
     prefix: Path,
     images: list[Path],
     rtl: bool = False,
     overlap: float = 10.0,
     skip: int = 0,
+    start: int = 1,
     force: bool = False,
 ):
     """
     Split an image into recto and verso parts.
     """
-    counter = 0
+    counter = start
     for image_path in images:
-        if counter < skip:
+        if counter <= skip:
             # copy image to final location without splitting
             path = prefix.parent / f"{prefix.name}-{counter}.jpg"
             if not path.exists() or force:

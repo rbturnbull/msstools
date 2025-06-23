@@ -45,7 +45,7 @@ See available commands with:
 
     msstools --help
 
-split-image
+split-images
 ^^^^^^^^^^^
 
 **Description:**  
@@ -64,7 +64,7 @@ Split image files into left and right parts (typically recto and verso pages), w
 
 .. code-block:: bash
 
-    msstools split-image output_dir/page img001.jpg img002.jpg --rtl --overlap 20
+    msstools split-images output_dir/page img001.jpg img002.jpg --rtl --overlap 20
 
 remove-accents
 ^^^^^^^^^^^^^^

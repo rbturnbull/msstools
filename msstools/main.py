@@ -5,7 +5,7 @@ import typer
 app = typer.Typer()
 
 @app.command()
-def split_image(
+def split_images(
     prefix: Path = typer.Argument(..., help="Path to the image file to be split"),
     images: list[Path] = typer.Argument(..., help="List of image files to be split"),
     rtl: bool = typer.Option(False, help="Split images in right-to-left direction"),
@@ -16,8 +16,8 @@ def split_image(
     """
     Split an image into recto and verso parts.
     """
-    from msstools.split import split_image
-    split_image(
+    from msstools.split import split_images
+    split_images(
         prefix=prefix,
         images=images,
         rtl=rtl,
