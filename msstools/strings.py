@@ -10,14 +10,13 @@ def remove_accents(input_text: str) -> str:
 
 def remove_accents_from_file(input_file_path: str|Path, output_file_path: str|Path) -> None:
     """Reads a file, removes accents from each line, and writes the cleaned lines to a new file."""
-    if not input_file_path or not output_file_path:
-        raise ValueError("Input and output file paths must be provided.")
+    assert input_file_path, f"Input file path must be provided."
+    assert output_file_path, f"Output file path must be provided."
 
     assert input_file_path != output_file_path, "Input and output file paths must be different."
     
     input_file_path = Path(input_file_path)
-    if not input_file_path.exists():
-        raise FileNotFoundError(f"Input file '{input_file_path}' does not exist.")
+    assert input_file_path.exists(), f"Input file '{input_file_path}' does not exist."
     
     # Ensure the output directory exists
     output_file_path = Path(output_file_path)

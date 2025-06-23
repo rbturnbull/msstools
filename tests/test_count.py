@@ -75,8 +75,15 @@ def test_compare_counts(tmp_path):
         str(output_path),
         "--start-homily", "0",
         "--end-homily", "1",
+        "--threshold", "5"
     ])
     assert result.exit_code == 0
     assert output_path.exists()
+    stdout = result.stdout.strip()
+    assert 'Base Sentence Count: 9\n' in stdout
+    assert 'Sentence 1.1.2 not found in comparison text.' in stdout
+    assert 'Paragraph 1.3 not found in comparison text.' in stdout
     output_svg = output_path.read_text(encoding='utf-8')
     assert '<?xml version="1.0" encoding="utf-8" ?>\n<svg baseProfile="tiny"' in output_svg
+    assert '<rect fill="black" height="10"' in output_svg
+    assert '<rect fill="green" height="10" width="1" x="0"' in output_svg

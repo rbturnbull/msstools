@@ -65,7 +65,7 @@ def csv_to_tei(input_csv:Path, output_xml:Path, dates:Path|None=None, max_readin
                 else:
                     ET.SubElement(witness, 'origDate', notBefore=start, notAfter=end)
             else:
-                print(f"witness {siglum} not in dates")
+                print(f"Witness {siglum} not in dates")
         
     tree = ET.ElementTree(root)
     ET.indent(tree, space="\t", level=0)
