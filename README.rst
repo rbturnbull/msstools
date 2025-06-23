@@ -98,7 +98,7 @@ Number ``<S>`` sentence tags within ``<P>`` paragraph blocks in an XML or struct
 
 .. code-block:: bash
 
-    msstools number-sentences homily1.xml homily1_numbered.xml
+    msstools number-sentences H1.txt H1_numbered.txt
 
 count-greek-chars
 ^^^^^^^^^^^^^^^^^
