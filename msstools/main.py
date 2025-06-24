@@ -60,7 +60,8 @@ def number_sentences(
 @app.command()
 def count_greek_chars(
     filename_prefix:str = typer.Argument(..., help="Prefix for the output files"),
-    homily_count:int = typer.Argument(..., help="Number of homilies to process"),
+    start_homily:int= typer.Option(0, help="The number of the homily to start with"),
+    end_homily:int = typer.Option(32, help="The number of the homily to end with"),
     warning_stdev:float = typer.Option(1.8, help="Standard deviation threshold for warnings"),
     output:Path = typer.Option(None, help="Path to save the output plot"),
     show:bool = typer.Option(False, help="Show the plot in a window"),
@@ -69,7 +70,14 @@ def count_greek_chars(
     Count Greek characters in text files and generate a plot.
     """
     from msstools.count import count_greek_chars
-    count_greek_chars(filename_prefix, homily_count, warning_stdev, output, show)
+    count_greek_chars(
+        filename_prefix=filename_prefix, 
+        start_homily=start_homily,
+        end_homily=end_homily,
+        warning_stdev=warning_stdev, 
+        output_path=output, 
+        show=show,
+    )
 
 
 @app.command()

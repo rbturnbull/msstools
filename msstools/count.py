@@ -26,7 +26,8 @@ def try_open_file( filenames ):
 
 def count_greek_chars(
     filename_prefix:str,
-    homily_count:int,
+    start_homily:int=0, 
+    end_homily:int=32, 
     warning_stdev:float = 1.8,
     output_path:Path|None = None,
     show:bool = False,
@@ -37,7 +38,7 @@ def count_greek_chars(
     current_page = "Unk"
     current_folio = None
     current_side = None
-    for homily_index in range(homily_count + 1):
+    for homily_index in range(start_homily, end_homily + 1):
         filename = f"{filename_prefix}{homily_index}"
         filename_leadingzero = f"{filename_prefix}0{homily_index}"
 
@@ -50,7 +51,7 @@ def count_greek_chars(
             line = line.strip()
             
             # Check for change of page, e.g.:
-            #        |F 71bv|
+            # |F 71bv|
             match = regex.match(r"\|F (\d+)([vrabcp]+)\|", line)
             if match:
                 folio = match.group(1)
@@ -74,6 +75,7 @@ def count_greek_chars(
             if char_count:
                 page_char_counts[current_page] += greek_char_count(line)
 
+    assert len(page_char_counts), f'No pages found in files with prefix {filename_prefix}'
 
     plt.figure(figsize=(20,10))
 
@@ -158,7 +160,7 @@ def read_sentence_counts( filename_prefix, start_homily = 0, end_homily = 32 ):
     return sentence_counts
 
 
-def length_dict_dataframe( sentence_counts ):
+def count_total( sentence_counts ) -> int:
     count = 0
     for h in sentence_counts:
         for p in sentence_counts[h]:
@@ -167,7 +169,7 @@ def length_dict_dataframe( sentence_counts ):
     return count
 
 
-def compare_dataframes(sentence_counts_base, sentence_counts_comparison, threshold):
+def compare_dictionaries(sentence_counts_base, sentence_counts_comparison, threshold):
     for h in sentence_counts_base:
         if h not in sentence_counts_comparison:
             print(f"Homily {h} not found in comparison text.")
@@ -194,11 +196,11 @@ def write_square( dwg, position, colour, size=1 , height=10):
     dwg.add(dwg.rect( (position*size, 0), ( (position+1) * size, height ), fill=colour ))
 
 
-def svg_dataframes( sentence_counts_base,  sentence_counts_comparison, threshold, filename, size=1, height=10):
+def svg_dictionaries( sentence_counts_base,  sentence_counts_comparison, threshold, filename, size=1, height=10):
     """Write the comparison of two sentence counts to an SVG file."""
     print("Writing SVG file:", filename)
-    
-    count = length_dict_dataframe(sentence_counts_base)
+
+    count = count_total(sentence_counts_base)
     dwg = svgwrite.Drawing(filename, size=(count*size,height), profile='tiny')
     
     position = 0
@@ -228,14 +230,14 @@ def compare_counts(base_prefix:str, comparison_prefix:str, output_svg:Path=None,
     print("Reading Base:")
     sentence_counts_base = read_sentence_counts(base_prefix, start_homily, end_homily)
 
-    count = length_dict_dataframe(sentence_counts_base)
+    count = count_total(sentence_counts_base)
     print('Base Sentence Count:', count)
 
     print("Reading Comparison:")
     sentence_counts_comparison = read_sentence_counts(comparison_prefix, start_homily, end_homily)
 
     print("Checking:")
-    compare_dataframes(sentence_counts_base, sentence_counts_comparison, threshold)
+    compare_dictionaries(sentence_counts_base, sentence_counts_comparison, threshold)
     
     if output_svg:
-        svg_dataframes(sentence_counts_base, sentence_counts_comparison, threshold, output_svg)
+        svg_dictionaries(sentence_counts_base, sentence_counts_comparison, threshold, output_svg)

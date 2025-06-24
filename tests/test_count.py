@@ -30,7 +30,7 @@ def test_count_greek_chars_function(tmp_path):
     )
     output_path = tmp_path / "dummy" / "plot.png"
 
-    count_greek_chars(str(file1)[:-5], 2, warning_stdev=1.0, output_path=output_path, show=False)
+    count_greek_chars(str(file1)[:-5], end_homily=2, warning_stdev=1.0, output_path=output_path, show=False)
 
     # Plot should be created
     assert output_path.exists()
@@ -44,7 +44,7 @@ def test_count_greek_chars_cli(tmp_path):
     result = runner.invoke(app, [
         "count-greek-chars",
         str(TEST_DATA/"X264-H"), 
-        "1", 
+        "--end-homily", "1", 
         "--output", str(plot_path)
     ])
     assert result.exit_code == 0
@@ -62,7 +62,7 @@ def test_folio_errors_are_detected(tmp_path, capsys):
         encoding="utf-8"
     )
 
-    count_greek_chars(str(file)[:-5], 1, warning_stdev=2.0, output_path=None, show=False)
+    count_greek_chars(str(file)[:-5], end_homily=1, warning_stdev=2.0, output_path=None, show=False)
 
     captured = capsys.readouterr()
     assert "Folio error from 1r to 3v in file weird_sequence0.txt" in captured.out

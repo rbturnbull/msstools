@@ -134,16 +134,17 @@ Count the number of Greek characters in a set of homily text files and generate 
 **Arguments:**
 
 - ``filename_prefix``: Prefix used to construct the filenames of the homily files.
-- ``homily_count``: Number of homilies to process.
+- ``--start-homily``: (Optional) First homily number to compare (default: 0).
+- ``--end-homily``: (Optional) Last homily number to compare (default: 32).
 - ``--warning-stdev``: (Optional) Standard deviation threshold for highlighting outliers (default: 1.8).
 - ``--output``: (Optional) Path to save the plot as an image.
-- ``--show``: (Optional) Show the plot in a window (default: False).
+- ``--show``: (Optional) Show the plot in a window (default: False unless there is no output).
 
 **Example:**
 
 .. code-block:: bash
 
-    msstools count-greek-chars homily 33 --output greek_chars.png --show
+    msstools count-greek-chars Jerusalem_PB_Saba_20_copy/Saba20_H --output Saba20-counts.png
 
 compare-counts
 ^^^^^^^^^^^^^^
