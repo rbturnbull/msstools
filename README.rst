@@ -28,7 +28,7 @@ Tools for Managing the Manuscripts of Chrysostom’s Homilies on Romans
 Installation
 ==================================
 
-Install (or update) using pip:
+To install (or update), use the following command:
 
 .. code-block:: bash
 
@@ -37,7 +37,6 @@ Install (or update) using pip:
 
 Command Line Usage
 ==================================
-
 
 See available commands with:
 
@@ -70,6 +69,8 @@ Split image files into left and right parts (typically recto and verso pages), w
 
 This will create the following files:
 
+.. code-block:: 
+    
     output/page-10v.jpg
     output/page-11r.jpg
     output/page-11v.jpg
@@ -82,6 +83,8 @@ This will create the following files:
     msstools split-images output/page img001.jpg img002.jpg --no-recto-verso --start 5
 
 This will create the following files:
+
+.. code-block:: 
 
     output/page-5.jpg
     output/page-6.jpg
