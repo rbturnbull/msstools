@@ -28,11 +28,11 @@ Tools for Managing the Manuscripts of Chrysostom’s Homilies on Romans
 Installation
 ==================================
 
-Install using pip:
+Install (or update) using pip:
 
 .. code-block:: bash
 
-    pip install git+https://github.com/rbturnbull/msstools.git
+    pip install -U git+https://github.com/rbturnbull/msstools.git
 
 
 Command Line Usage
@@ -46,10 +46,10 @@ See available commands with:
     msstools --help
 
 split-images
-^^^^^^^^^^^
+^^^^^^^^^^^^
 
 **Description:**  
-Split image files into left and right parts (typically recto and verso pages), with optional right-to-left direction and overlap.
+Split image files into left and right parts (typically recto and verso pages), with optional right-to-left direction, overlap, and flexible naming.
 
 **Arguments:**
 
@@ -57,14 +57,36 @@ Split image files into left and right parts (typically recto and verso pages), w
 - ``images``: One or more image files to be split.
 - ``--rtl``: (Optional) Split images in right-to-left direction.
 - ``--overlap``: (Optional) Overlap percentage between split images (default: 10).
-- ``--skip``: (Optional) Number of pages to skip before splitting.
-- ``--force``: (Optional) Overwrite existing files if they exist.
+- ``--start``: (Optional) The folio number for the first image (default: 1).
+- ``--skip``: (Optional) Number of images to skip before splitting.
+- ``--recto-verso / --no-recto-verso``: (Optional, default: ``--recto-verso``) Use 'r' and 'v' suffixes for recto and verso pages. Use ``--no-recto-verso`` to output sequential numbers instead.
+- ``--force``: (Optional) Overwrite existing output files if they already exist.
 
-**Example:**
+**Example (default recto/verso mode):**
 
 .. code-block:: bash
 
-    msstools split-images output_dir/page img001.jpg img002.jpg --rtl --overlap 20
+    msstools split-images output/page img001.jpg img002.jpg --rtl --overlap 20 --start 10
+
+This will create the following files:
+
+    output/page-10v.jpg
+    output/page-11r.jpg
+    output/page-11v.jpg
+    output/page-12r.jpg
+
+**Example (sequential numbering):**
+
+.. code-block:: bash
+
+    msstools split-images output/page img001.jpg img002.jpg --no-recto-verso --start 5
+
+This will create the following files:
+
+    output/page-5.jpg
+    output/page-6.jpg
+    output/page-7.jpg
+    output/page-8.jpg
 
 remove-accents
 ^^^^^^^^^^^^^^

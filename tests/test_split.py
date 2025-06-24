@@ -59,13 +59,14 @@ def test_split_images_rtl_no_recto_verso(tmp_path):
         str(img),
         str(img),
         "--rtl",
+        "--no-recto-verso",
     ])
     assert result.exit_code == 0
 
     for i in range(1, 5):
         path = tmp_path / f"out-{i}.jpg"
         assert path.exists()
-        
+
 
 def test_split_images_rtl_start66(tmp_path):
     img = create_test_image(tmp_path / "page.jpg", color=(0, 0, 255))

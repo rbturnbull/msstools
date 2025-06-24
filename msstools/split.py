@@ -10,7 +10,7 @@ def split_images(
     overlap: float = 10.0,
     start: int = 1,
     skip: int = 0,
-    recto_verso: bool = False,
+    recto_verso: bool = True,
     force: bool = False,
 ):
     """
@@ -21,12 +21,16 @@ def split_images(
     recto_marker = "r" if recto_verso else ""
     verso_marker = "v" if recto_verso else ""
 
+    prefix = Path(prefix)
+    prefix.parent.mkdir(parents=True, exist_ok=True)
+
     for image_path in images:
+        suffix = image_path.suffix
         if counter <= skip:
             # copy image to final location without splitting
-            path = prefix.parent / f"{prefix.name}-{counter}.jpg"
+            path = prefix.parent / f"{prefix.name}-{counter}{suffix}"
             if not path.exists() or force:
-                shutil.copy(image_path, prefix.parent / f"{prefix.name}-{counter}.jpg")
+                shutil.copy(image_path, prefix.parent / f"{prefix.name}-{counter}{suffix}")
             counter += 1
             continue
         
@@ -47,9 +51,9 @@ def split_images(
                 verso_img = img.crop(left_crop) 
                 recto_img = img.crop(right_crop)
 
-            verso_path = prefix.parent / f"{prefix.name}-{counter}{verso_marker}.jpg"
+            verso_path = prefix.parent / f"{prefix.name}-{counter}{verso_marker}{suffix}"
             counter += 1
-            recto_path = prefix.parent / f"{prefix.name}-{counter}{recto_marker}.jpg"
+            recto_path = prefix.parent / f"{prefix.name}-{counter}{recto_marker}{suffix}"
 
             if not recto_verso:
                 counter += 1
