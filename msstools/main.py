@@ -12,6 +12,7 @@ def split_images(
     overlap: float = typer.Option(10, help="Overlap percentage between split images"),
     start: int = typer.Option(1, help="The folio number for the first image"),
     skip: int = typer.Option(0, help="Number of pages to skip before splitting"),
+    recto_verso: bool = typer.Option(False, help="Use 'r' and 'v' suffixes for recto and verso pages (default is sequential pagination)."),
     force: bool = typer.Option(False, help="Force overwrite existing files"),
 ):
     """
@@ -25,6 +26,7 @@ def split_images(
         overlap=overlap,
         start=start,
         skip=skip,
+        recto_verso=recto_verso,
         force=force,
     )
 

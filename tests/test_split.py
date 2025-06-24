@@ -18,7 +18,8 @@ def test_split_images_ltr(tmp_path):
         "split-images",
         str(tmp_path / "output"),
         str(img1), str(img2),
-        "--overlap", "20"
+        "--overlap", "20",
+        "--recto-verso",
     ])
     assert result.exit_code == 0
 
@@ -38,7 +39,8 @@ def test_split_images_rtl(tmp_path):
         "split-images",
         str(tmp_path / "out"),
         str(img),
-        "--rtl"
+        "--rtl",
+        "--recto-verso",
     ])
     assert result.exit_code == 0
 
@@ -57,6 +59,7 @@ def test_split_images_rtl_start66(tmp_path):
         str(img),
         "--rtl",
         "--start", "66",
+        "--recto-verso",
     ])
     assert result.exit_code == 0
 
@@ -74,7 +77,8 @@ def test_split_images_skip(tmp_path):
         "split-images",
         str(tmp_path / "book"),
         str(img1), str(img2),
-        "--skip", "1"
+        "--skip", "1",
+        "--recto-verso",
     ])
     assert result.exit_code == 0
 
@@ -93,7 +97,8 @@ def test_split_images_force_overwrite(tmp_path):
     runner.invoke(app, [
         "split-images",
         str(out_prefix),
-        str(img)
+        str(img),
+        "--recto-verso",
     ])
     v_path = tmp_path / "scan-1v.jpg"
     r_path = tmp_path / "scan-2r.jpg"
@@ -105,7 +110,8 @@ def test_split_images_force_overwrite(tmp_path):
         "split-images",
         str(out_prefix),
         str(img),
-        "--force"
+        "--recto-verso",
+        "--force",
     ])
     with Image.open(v_path) as im:
         assert im.getpixel((0, 0)) == (99, 99, 99)

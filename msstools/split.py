@@ -8,14 +8,19 @@ def split_images(
     images: list[Path],
     rtl: bool = False,
     overlap: float = 10.0,
-    skip: int = 0,
     start: int = 1,
+    skip: int = 0,
+    recto_verso: bool = False,
     force: bool = False,
 ):
     """
     Split an image into recto and verso parts.
     """
     counter = start
+
+    recto_marker = "r" if recto_verso else ""
+    verso_marker = "v" if recto_verso else ""
+
     for image_path in images:
         if counter <= skip:
             # copy image to final location without splitting
@@ -42,9 +47,12 @@ def split_images(
                 verso_img = img.crop(left_crop) 
                 recto_img = img.crop(right_crop)
 
-            verso_path = prefix.parent / f"{prefix.name}-{counter}v.jpg"
+            verso_path = prefix.parent / f"{prefix.name}-{counter}{verso_marker}.jpg"
             counter += 1
-            recto_path = prefix.parent / f"{prefix.name}-{counter}r.jpg"
+            recto_path = prefix.parent / f"{prefix.name}-{counter}{recto_marker}.jpg"
+
+            if not recto_verso:
+                counter += 1
 
             if not verso_path.exists() or force:
                 verso_img.save(verso_path)
