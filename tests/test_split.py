@@ -29,6 +29,8 @@ def test_split_images_ltr(tmp_path):
             assert img.height == 100
             assert img.width > 100  # overlap included
 
+
+
 def test_split_images_rtl(tmp_path):
     img = create_test_image(tmp_path / "page.jpg", color=(0, 0, 255))
 
@@ -44,6 +46,25 @@ def test_split_images_rtl(tmp_path):
     r_path = tmp_path / "out-2r.jpg"
     assert v_path.exists()
     assert r_path.exists()
+
+
+def test_split_images_rtl_start66(tmp_path):
+    img = create_test_image(tmp_path / "page.jpg", color=(0, 0, 255))
+
+    result = runner.invoke(app, [
+        "split-images",
+        str(tmp_path / "out"),
+        str(img),
+        "--rtl",
+        "--start", "66",
+    ])
+    assert result.exit_code == 0
+
+    v_path = tmp_path / "out-66v.jpg"
+    r_path = tmp_path / "out-67r.jpg"
+    assert v_path.exists()
+    assert r_path.exists()
+
 
 def test_split_images_skip(tmp_path):
     img1 = create_test_image(tmp_path / "skip1.jpg", color=(123, 123, 123))

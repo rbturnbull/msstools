@@ -10,6 +10,7 @@ def split_images(
     images: list[Path] = typer.Argument(..., help="List of image files to be split"),
     rtl: bool = typer.Option(False, help="Split images in right-to-left direction"),
     overlap: float = typer.Option(10, help="Overlap percentage between split images"),
+    start: int = typer.Option(1, help="The folio number for the first image"),
     skip: int = typer.Option(0, help="Number of pages to skip before splitting"),
     force: bool = typer.Option(False, help="Force overwrite existing files"),
 ):
@@ -22,6 +23,7 @@ def split_images(
         images=images,
         rtl=rtl,
         overlap=overlap,
+        start=start,
         skip=skip,
         force=force,
     )
@@ -70,12 +72,12 @@ def count_greek_chars(
 
 @app.command()
 def compare_counts(
-    base_prefix:str = typer.Argument(..., help="The prefix for files of the base text."),
-    comparison_prefix:str = typer.Argument(..., help="The prefix for files of the comparison text."),
-    output_path:Path = typer.Argument(..., help="Path to save the output plot."),
-    start_homily:int= typer.Option(0, help="The number of the homily to start with."),
-    end_homily:int = typer.Option(32, help="The number of the homily to end with."),
-    threshold:int = typer.Option(50, help="The number of characters which the comparison text sentence can be above the base text sentence before triggering the warning indication."),
+    base_prefix:str = typer.Argument(..., help="The prefix for files of the base text"),
+    comparison_prefix:str = typer.Argument(..., help="The prefix for files of the comparison text"),
+    output_path:Path = typer.Argument(..., help="Path to save the output plot"),
+    start_homily:int= typer.Option(0, help="The number of the homily to start with"),
+    end_homily:int = typer.Option(32, help="The number of the homily to end with"),
+    threshold:int = typer.Option(50, help="The number of characters which the comparison text sentence can be above the base text sentence before triggering the warning indication"),
 ):
     """ Compares homily transcriptions with a base text and visualizes where text is missing """
     from msstools.count import compare_counts
@@ -91,10 +93,10 @@ def compare_counts(
 
 @app.command()
 def csv_to_tei(
-    input_csv:Path=typer.Argument(..., help="The path to the input CSV file containing readings."),
-    output_xml:Path=typer.Argument(..., help="The path to the output XML file."),
-    dates:Path=typer.Option(None, help="Optional path to a file containing dates."),
-    max_readings:int=typer.Option(0, help="Maximum number of readings to process at each variation unit."),
+    input_csv:Path=typer.Argument(..., help="The path to the input CSV file containing readings"),
+    output_xml:Path=typer.Argument(..., help="The path to the output XML file"),
+    dates:Path=typer.Option(None, help="Optional path to a file containing dates"),
+    max_readings:int=typer.Option(0, help="Maximum number of readings to process at each variation unit"),
 ):
     """ Convert a CSV file of readings into TEI XML format."""
     from msstools.tei import csv_to_tei
