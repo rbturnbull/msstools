@@ -149,13 +149,13 @@ compare-counts
 ^^^^^^^^^^^^^^
 
 **Description:**  
-Compare the Greek character counts between two sets of homily transcriptions and generate a plot showing where the comparison text has significantly more characters than the base.
+Compare the Greek character counts between two sets of homily transcriptions and optionally generate a plot showing where the comparison text has significantly more characters than the base.
 
 **Arguments:**
 
 - ``base_prefix``: Prefix for the base homily files.
 - ``comparison_prefix``: Prefix for the comparison homily files.
-- ``output_path``: Path to save the resulting plot.
+- ``--output-svg``: (Optional) Path to save the resulting plot as an SVG.
 - ``--start-homily``: (Optional) First homily number to compare (default: 0).
 - ``--end-homily``: (Optional) Last homily number to compare (default: 32).
 - ``--threshold``: (Optional) Character difference threshold that triggers a warning (default: 50).
@@ -164,7 +164,7 @@ Compare the Greek character counts between two sets of homily transcriptions and
 
 .. code-block:: bash
 
-    msstools compare-counts Migne_H Saba20_H Migne_vs_Saba20.png --threshold 40
+    msstools compare-counts Migne_H Saba20_H --threshold 40
 
 csv-to-tei
 ^^^^^^^^^^

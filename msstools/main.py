@@ -76,7 +76,7 @@ def count_greek_chars(
 def compare_counts(
     base_prefix:str = typer.Argument(..., help="The prefix for files of the base text"),
     comparison_prefix:str = typer.Argument(..., help="The prefix for files of the comparison text"),
-    output_path:Path = typer.Argument(..., help="Path to save the output plot"),
+    output_svg:Path = typer.Option(None, help="Path to save the output as an SVG file"),
     start_homily:int= typer.Option(0, help="The number of the homily to start with"),
     end_homily:int = typer.Option(32, help="The number of the homily to end with"),
     threshold:int = typer.Option(50, help="The number of characters which the comparison text sentence can be above the base text sentence before triggering the warning indication"),
@@ -86,7 +86,7 @@ def compare_counts(
     compare_counts(
         base_prefix=base_prefix,
         comparison_prefix=comparison_prefix,
-        output_path=output_path,
+        output_svg=output_svg,
         start_homily=start_homily,
         end_homily=end_homily,
         threshold=threshold,

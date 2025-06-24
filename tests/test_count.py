@@ -76,7 +76,7 @@ def test_compare_counts(tmp_path):
         "compare-counts",
         str(TEST_DATA/"Base-H"), 
         str(TEST_DATA/"X264-H"), 
-        str(output_path),
+        "--output-svg", str(output_path),
         "--start-homily", "0",
         "--end-homily", "2",
         "--threshold", "5"

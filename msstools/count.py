@@ -195,6 +195,9 @@ def write_square( dwg, position, colour, size=1 , height=10):
 
 
 def svg_dataframes( sentence_counts_base,  sentence_counts_comparison, threshold, filename, size=1, height=10):
+    """Write the comparison of two sentence counts to an SVG file."""
+    print("Writing SVG file:", filename)
+    
     count = length_dict_dataframe(sentence_counts_base)
     dwg = svgwrite.Drawing(filename, size=(count*size,height), profile='tiny')
     
@@ -221,7 +224,7 @@ def svg_dataframes( sentence_counts_base,  sentence_counts_comparison, threshold
     dwg.save()            
     
 
-def compare_counts(base_prefix:str, comparison_prefix:str, output_path:Path, start_homily:int=0, end_homily=32, threshold:int=50):
+def compare_counts(base_prefix:str, comparison_prefix:str, output_svg:Path=None, start_homily:int=0, end_homily=32, threshold:int=50):
     print("Reading Base:")
     sentence_counts_base = read_sentence_counts(base_prefix, start_homily, end_homily)
 
@@ -232,5 +235,7 @@ def compare_counts(base_prefix:str, comparison_prefix:str, output_path:Path, sta
     sentence_counts_comparison = read_sentence_counts(comparison_prefix, start_homily, end_homily)
 
     print("Checking:")
-    compare_dataframes( sentence_counts_base, sentence_counts_comparison, threshold)
-    svg_dataframes(sentence_counts_base, sentence_counts_comparison, threshold,  output_path)
+    compare_dataframes(sentence_counts_base, sentence_counts_comparison, threshold)
+    
+    if output_svg:
+        svg_dataframes(sentence_counts_base, sentence_counts_comparison, threshold, output_svg)
