@@ -58,6 +58,7 @@ def test_split_images_rtl_no_recto_verso(tmp_path):
         str(tmp_path / "out"),
         str(img),
         str(img),
+        "--margin-left", "10",
         "--rtl",
         "--no-recto-verso",
     ])

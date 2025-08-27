@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "msstools"
-version = "0.1.0"
+version = "0.1.1"
 description = "Tools for Managing the Manuscripts of Chrysostom’s Homilies on Romans"
 authors = ["Homilies on Romans <robert.turnbull@unimelb.edu.au>"]
 license = "Apache-2.0"
