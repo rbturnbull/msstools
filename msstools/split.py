@@ -12,6 +12,7 @@ def split_images(
     skip: int = 0,
     recto_verso: bool = True,
     force: bool = False,
+    offset: int = 0,
 ):
     """
     Split an image into recto and verso parts.
@@ -38,7 +39,7 @@ def split_images(
         with Image.open(image_path) as img:
             width, height = img.size
             overlap_px = int(width * (overlap / 100.0))
-            half = width // 2
+            half = width // 2 + offset
 
             # The overlap is centered around the midpoint
             left_crop = (0, 0, half + overlap_px // 2, height)
@@ -52,8 +53,10 @@ def split_images(
                 recto_img = img.crop(right_crop)
 
             verso_path = prefix.parent / f"{prefix.name}-{counter}{verso_marker}{suffix}"
+            print("\tVerso", verso_path)
             counter += 1
             recto_path = prefix.parent / f"{prefix.name}-{counter}{recto_marker}{suffix}"
+            print("\tRecto", recto_path)
 
             if not recto_verso:
                 counter += 1
