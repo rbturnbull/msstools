@@ -1,26 +1,33 @@
 from pathlib import Path
 from PIL import Image
 from typer.testing import CliRunner
-from msstools.main import app 
+from msstools.main import app
 
 runner = CliRunner()
+
 
 def create_test_image(path: Path, width=200, height=100, color=(255, 0, 0)):
     img = Image.new("RGB", (width, height), color=color)
     img.save(path)
     return path
 
+
 def test_split_images_ltr(tmp_path):
     img1 = create_test_image(tmp_path / "page1.jpg")
     img2 = create_test_image(tmp_path / "page2.jpg", color=(0, 255, 0))
 
-    result = runner.invoke(app, [
-        "split-images",
-        str(tmp_path / "output"),
-        str(img1), str(img2),
-        "--overlap", "20",
-        "--recto-verso",
-    ])
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "output"),
+            str(img1),
+            str(img2),
+            "--overlap",
+            "20",
+            "--recto-verso",
+        ],
+    )
     assert result.exit_code == 0
 
     files = list(tmp_path.glob("output-*"))
@@ -31,17 +38,19 @@ def test_split_images_ltr(tmp_path):
             assert img.width > 100  # overlap included
 
 
-
 def test_split_images_rtl(tmp_path):
     img = create_test_image(tmp_path / "page.jpg", color=(0, 0, 255))
 
-    result = runner.invoke(app, [
-        "split-images",
-        str(tmp_path / "out"),
-        str(img),
-        "--rtl",
-        "--recto-verso",
-    ])
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "out"),
+            str(img),
+            "--rtl",
+            "--recto-verso",
+        ],
+    )
     assert result.exit_code == 0
 
     v_path = tmp_path / "out-1v.jpg"
@@ -53,15 +62,19 @@ def test_split_images_rtl(tmp_path):
 def test_split_images_rtl_no_recto_verso(tmp_path):
     img = create_test_image(tmp_path / "page.jpg", color=(0, 0, 255))
 
-    result = runner.invoke(app, [
-        "split-images",
-        str(tmp_path / "out"),
-        str(img),
-        str(img),
-        "--margin-left", "10",
-        "--rtl",
-        "--no-recto-verso",
-    ])
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "out"),
+            str(img),
+            str(img),
+            "--margin-left",
+            "10",
+            "--rtl",
+            "--no-recto-verso",
+        ],
+    )
     assert result.exit_code == 0
 
     for i in range(1, 5):
@@ -72,14 +85,18 @@ def test_split_images_rtl_no_recto_verso(tmp_path):
 def test_split_images_rtl_start66(tmp_path):
     img = create_test_image(tmp_path / "page.jpg", color=(0, 0, 255))
 
-    result = runner.invoke(app, [
-        "split-images",
-        str(tmp_path / "out"),
-        str(img),
-        "--rtl",
-        "--start", "66",
-        "--recto-verso",
-    ])
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "out"),
+            str(img),
+            "--rtl",
+            "--start",
+            "66",
+            "--recto-verso",
+        ],
+    )
     assert result.exit_code == 0
 
     v_path = tmp_path / "out-66v.jpg"
@@ -88,17 +105,44 @@ def test_split_images_rtl_start66(tmp_path):
     assert r_path.exists()
 
 
+def test_split_images_zero_pads_page_numbers(tmp_path):
+    images = [
+        create_test_image(tmp_path / f"page{i}.jpg", color=(i, i, i)) for i in range(9)
+    ]
+
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "out"),
+            *[str(image) for image in images],
+            "--recto-verso",
+        ],
+    )
+    assert result.exit_code == 0
+
+    assert (tmp_path / "out-01v.jpg").exists()
+    assert (tmp_path / "out-02r.jpg").exists()
+    assert (tmp_path / "out-09v.jpg").exists()
+    assert (tmp_path / "out-10r.jpg").exists()
+
+
 def test_split_images_skip(tmp_path):
     img1 = create_test_image(tmp_path / "skip1.jpg", color=(123, 123, 123))
     img2 = create_test_image(tmp_path / "split1.jpg", color=(234, 234, 234))
 
-    result = runner.invoke(app, [
-        "split-images",
-        str(tmp_path / "book"),
-        str(img1), str(img2),
-        "--skip", "1",
-        "--recto-verso",
-    ])
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "book"),
+            str(img1),
+            str(img2),
+            "--skip",
+            "1",
+            "--recto-verso",
+        ],
+    )
     assert result.exit_code == 0
 
     # First image should be copied directly
@@ -113,24 +157,30 @@ def test_split_images_force_overwrite(tmp_path):
     out_prefix = tmp_path / "scan"
 
     # First run
-    runner.invoke(app, [
-        "split-images",
-        str(out_prefix),
-        str(img),
-        "--recto-verso",
-    ])
+    runner.invoke(
+        app,
+        [
+            "split-images",
+            str(out_prefix),
+            str(img),
+            "--recto-verso",
+        ],
+    )
     v_path = tmp_path / "scan-1v.jpg"
     r_path = tmp_path / "scan-2r.jpg"
     assert v_path.exists()
 
     # Overwrite with different color
     create_test_image(img, color=(99, 99, 99))
-    runner.invoke(app, [
-        "split-images",
-        str(out_prefix),
-        str(img),
-        "--recto-verso",
-        "--force",
-    ])
+    runner.invoke(
+        app,
+        [
+            "split-images",
+            str(out_prefix),
+            str(img),
+            "--recto-verso",
+            "--force",
+        ],
+    )
     with Image.open(v_path) as im:
         assert im.getpixel((0, 0)) == (99, 99, 99)
