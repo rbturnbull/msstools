@@ -63,54 +63,48 @@ Split image files into left and right parts (typically recto and verso pages), w
 - ``images``: One or more image files to be split.
 - ``--rtl``: (Optional) Split images in right-to-left direction.
 - ``--overlap``: (Optional) Overlap percentage between split images (default: 10).
-- ``--start``: (Optional) The folio number for the first split image (default: 0).
 - ``--skip``: (Optional) Number of images to skip before splitting.
-- ``--duplicates``: (Optional) Folio number that appears more than once. Can be used multiple times.
-- ``--recto-verso / --no-recto-verso``: (Optional, default: ``--recto-verso``) Use 'r' and 'v' suffixes for recto and verso pages. Use ``--no-recto-verso`` to output sequential numbers instead.
+- ``--recto``: (Optional) Recto folio anchor in the form ``FILENAME=FOLIO``. Can be used multiple times.
 - ``--force``: (Optional) Overwrite existing output files if they already exist.
-
-**Example (default recto/verso mode):**
-
-.. code-block:: bash
-
-    msstools split-images output/page img001.jpg img002.jpg --rtl --overlap 20 --start 10
-
-This will create the following files:
-
-.. code-block:: 
-    
-    output/page-f10v.jpg
-    output/page-f11r.jpg
-    output/page-f11v.jpg
-    output/page-f12r.jpg
-
-With the default ``--start 0``, the first split folio is ``0v`` and the second
-is ``1r`` (written as ``-f0v`` and ``-f1r`` in filenames). This is useful when
-the first scanned image is a front cover or other material before the main
-manuscript foliation begins. If you have preamble images that should not be
-split, use ``--skip``; skipped images are copied as ``--0``, ``--1``, etc., so
-they sort before the main folio images and do not advance the folio numbering.
-For example, ``--start 0 --skip 3`` produces ``--0``, ``--1``, ``--2``,
-``-f0v``, ``-f1r``, ...
-
-If a folio number appears twice in the manuscript, pass it with ``--duplicates``.
-For example, ``--duplicates 46`` writes the two occurrences as ``-f46rA`` /
-``-f46vA`` and ``-f46rB`` / ``-f46vB`` before continuing to ``-f47r``.
 
 **Example (sequential numbering):**
 
 .. code-block:: bash
 
-    msstools split-images output/page img001.jpg img002.jpg --no-recto-verso --start 5
+    msstools split-images output/page img001.jpg img002.jpg --rtl --overlap 20
+
+This will create the following files:
+
+.. code-block:: 
+    
+    output/page-0.jpg
+    output/page-1.jpg
+    output/page-2.jpg
+    output/page-3.jpg
+
+Skipped images are copied into the same output sequence without a folio
+reference. For example, ``--skip 3`` starts with ``page-0.jpg``,
+``page-1.jpg``, and ``page-2.jpg``.
+
+**Example (folio references):**
+
+.. code-block:: bash
+
+    msstools split-images output/page img001.jpg img002.jpg img003.jpg --recto img002.jpg=49
 
 This will create the following files:
 
 .. code-block:: 
 
-    output/page-f5.jpg
-    output/page-f6.jpg
-    output/page-f7.jpg
-    output/page-f8.jpg
+    output/page-0.jpg
+    output/page-1.jpg
+    output/page-2.jpg
+    output/page-3-49r.jpg
+    output/page-4-49v.jpg
+    output/page-5-50r.jpg
+
+Everything before the first ``--recto`` anchor has no folio reference. After an
+anchor, folio references continue automatically until the next anchor.
 
 remove-accents
 ^^^^^^^^^^^^^^

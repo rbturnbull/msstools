@@ -25,17 +25,21 @@ def test_split_images_ltr(tmp_path):
             str(img2),
             "--overlap",
             "20",
-            "--recto-verso",
         ],
     )
     assert result.exit_code == 0
 
     files = list(tmp_path.glob("output-*"))
-    assert len(files) == 4  # 2 pages → 2 verso and 2 recto
+    assert len(files) == 4
+    assert (tmp_path / "output-0.jpg").exists()
+    assert (tmp_path / "output-1.jpg").exists()
+    assert (tmp_path / "output-2.jpg").exists()
+    assert (tmp_path / "output-3.jpg").exists()
+
     for file in files:
         with Image.open(file) as img:
             assert img.height == 100
-            assert img.width > 100  # overlap included
+            assert img.width > 100
 
 
 def test_split_images_rtl(tmp_path):
@@ -48,66 +52,18 @@ def test_split_images_rtl(tmp_path):
             str(tmp_path / "out"),
             str(img),
             "--rtl",
-            "--recto-verso",
         ],
     )
     assert result.exit_code == 0
 
-    v_path = tmp_path / "out-f0v.jpg"
-    r_path = tmp_path / "out-f1r.jpg"
-    assert v_path.exists()
-    assert r_path.exists()
+    assert (tmp_path / "out-0.jpg").exists()
+    assert (tmp_path / "out-1.jpg").exists()
 
 
-def test_split_images_rtl_no_recto_verso(tmp_path):
-    img = create_test_image(tmp_path / "page.jpg", color=(0, 0, 255))
-
-    result = runner.invoke(
-        app,
-        [
-            "split-images",
-            str(tmp_path / "out"),
-            str(img),
-            str(img),
-            "--margin-left",
-            "10",
-            "--rtl",
-            "--no-recto-verso",
-        ],
-    )
-    assert result.exit_code == 0
-
-    for i in range(0, 4):
-        path = tmp_path / f"out-f{i}.jpg"
-        assert path.exists()
-
-
-def test_split_images_rtl_start155(tmp_path):
-    img = create_test_image(tmp_path / "page.jpg", color=(0, 0, 255))
-
-    result = runner.invoke(
-        app,
-        [
-            "split-images",
-            str(tmp_path / "out"),
-            str(img),
-            "--rtl",
-            "--start",
-            "155",
-            "--recto-verso",
-        ],
-    )
-    assert result.exit_code == 0
-
-    v_path = tmp_path / "out-f155v.jpg"
-    r_path = tmp_path / "out-f156r.jpg"
-    assert v_path.exists()
-    assert r_path.exists()
-
-
-def test_split_images_zero_pads_page_numbers(tmp_path):
+def test_split_images_zero_pads_output_indexes(tmp_path):
     images = [
-        create_test_image(tmp_path / f"page{i}.jpg", color=(i, i, i)) for i in range(10)
+        create_test_image(tmp_path / f"page{i}.jpg", color=(i, i, i))
+        for i in range(10)
     ]
 
     result = runner.invoke(
@@ -116,15 +72,14 @@ def test_split_images_zero_pads_page_numbers(tmp_path):
             "split-images",
             str(tmp_path / "out"),
             *[str(image) for image in images],
-            "--recto-verso",
         ],
     )
     assert result.exit_code == 0
 
-    assert (tmp_path / "out-f00v.jpg").exists()
-    assert (tmp_path / "out-f01r.jpg").exists()
-    assert (tmp_path / "out-f09v.jpg").exists()
-    assert (tmp_path / "out-f10r.jpg").exists()
+    assert (tmp_path / "out-00.jpg").exists()
+    assert (tmp_path / "out-01.jpg").exists()
+    assert (tmp_path / "out-18.jpg").exists()
+    assert (tmp_path / "out-19.jpg").exists()
 
 
 def test_split_images_skip(tmp_path):
@@ -140,22 +95,45 @@ def test_split_images_skip(tmp_path):
             str(img2),
             "--skip",
             "1",
-            "--recto-verso",
         ],
     )
     assert result.exit_code == 0
 
-    # First image should be copied directly
-    assert (tmp_path / "book--0.jpg").exists()
-    # Second image should be split into verso and recto
-    assert (tmp_path / "book-f0v.jpg").exists()
-    assert (tmp_path / "book-f1r.jpg").exists()
+    assert (tmp_path / "book-0.jpg").exists()
+    assert (tmp_path / "book-1.jpg").exists()
+    assert (tmp_path / "book-2.jpg").exists()
 
 
-def test_split_images_skip_does_not_advance_start_with_padding(tmp_path):
+def test_split_images_recto_anchor(tmp_path):
     images = [
         create_test_image(tmp_path / f"page{i}.jpg", color=(i, i, i))
-        for i in range(13)
+        for i in range(3)
+    ]
+
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "book"),
+            *[str(image) for image in images],
+            "--recto",
+            "page1.jpg=49",
+        ],
+    )
+    assert result.exit_code == 0
+
+    assert (tmp_path / "book-0.jpg").exists()
+    assert (tmp_path / "book-1.jpg").exists()
+    assert (tmp_path / "book-2.jpg").exists()
+    assert (tmp_path / "book-3-49r.jpg").exists()
+    assert (tmp_path / "book-4-49v.jpg").exists()
+    assert (tmp_path / "book-5-50r.jpg").exists()
+
+
+def test_split_images_recto_anchor_with_padded_indexes(tmp_path):
+    images = [
+        create_test_image(tmp_path / f"page{i}.jpg", color=(i, i, i))
+        for i in range(6)
     ]
 
     result = runner.invoke(
@@ -166,65 +144,36 @@ def test_split_images_skip_does_not_advance_start_with_padding(tmp_path):
             *[str(image) for image in images],
             "--skip",
             "3",
-            "--recto-verso",
+            "--recto",
+            "page3.jpg=49",
         ],
     )
     assert result.exit_code == 0
 
-    assert (tmp_path / "book--00.jpg").exists()
-    assert (tmp_path / "book--01.jpg").exists()
-    assert (tmp_path / "book--02.jpg").exists()
-    assert (tmp_path / "book-f00v.jpg").exists()
-    assert (tmp_path / "book-f01r.jpg").exists()
-
-
-def test_split_images_duplicate_folio_labels(tmp_path):
-    images = [
-        create_test_image(tmp_path / f"page{i}.jpg", color=(i, i, i))
-        for i in range(4)
-    ]
-
-    result = runner.invoke(
-        app,
-        [
-            "split-images",
-            str(tmp_path / "book"),
-            *[str(image) for image in images],
-            "--start",
-            "44",
-            "--duplicates",
-            "46",
-            "--recto-verso",
-        ],
-    )
-    assert result.exit_code == 0
-
-    assert (tmp_path / "book-f46rA.jpg").exists()
-    assert (tmp_path / "book-f46vA.jpg").exists()
-    assert (tmp_path / "book-f46rB.jpg").exists()
-    assert (tmp_path / "book-f46vB.jpg").exists()
-    assert (tmp_path / "book-f47r.jpg").exists()
+    assert (tmp_path / "book-0.jpg").exists()
+    assert (tmp_path / "book-1.jpg").exists()
+    assert (tmp_path / "book-2.jpg").exists()
+    assert (tmp_path / "book-3.jpg").exists()
+    assert (tmp_path / "book-4-49r.jpg").exists()
+    assert (tmp_path / "book-5-49v.jpg").exists()
+    assert (tmp_path / "book-6-50r.jpg").exists()
 
 
 def test_split_images_force_overwrite(tmp_path):
     img = create_test_image(tmp_path / "original.jpg", color=(10, 10, 10))
     out_prefix = tmp_path / "scan"
 
-    # First run
     runner.invoke(
         app,
         [
             "split-images",
             str(out_prefix),
             str(img),
-            "--recto-verso",
         ],
     )
-    v_path = tmp_path / "scan-f0v.jpg"
-    r_path = tmp_path / "scan-f1r.jpg"
+    v_path = tmp_path / "scan-0.jpg"
     assert v_path.exists()
 
-    # Overwrite with different color
     create_test_image(img, color=(99, 99, 99))
     runner.invoke(
         app,
@@ -232,7 +181,6 @@ def test_split_images_force_overwrite(tmp_path):
             "split-images",
             str(out_prefix),
             str(img),
-            "--recto-verso",
             "--force",
         ],
     )
