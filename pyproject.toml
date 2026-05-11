@@ -19,12 +19,12 @@ classifiers = [
 
 [tool.poetry.dependencies]
 python = ">=3.10,<3.15"
-pillow = "^11.2.1"
+pillow = ">=11.2.1"
 numpy = ">=1.23.5"
-typer = "^0.16.0"
-regex = "^2024.11.6"
-matplotlib = "^3.10.3"
-svgwrite = "^1.4.3"
+typer = ">=0.16.0"
+regex = ">=2024.11.6"
+matplotlib = ">=3.10.3"
+svgwrite = ">=1.4.3"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=6.2.5"
