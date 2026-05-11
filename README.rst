@@ -4,7 +4,11 @@ MSS Tools
 
 .. start-badges
 
-|testing badge| |coverage badge| |docs badge| |black badge|
+|pypi badge| |testing badge| |coverage badge| |docs badge| |black badge| |doi badge|
+
+.. |pypi badge| image:: https://img.shields.io/pypi/v/msstools?color=blue
+   :alt: PyPI - Version
+   :target: https://pypi.org/project/msstools/
 
 .. |testing badge| image:: https://github.com/rbturnbull/msstools/actions/workflows/testing.yml/badge.svg
     :target: https://github.com/rbturnbull/msstools/actions
@@ -17,6 +21,9 @@ MSS Tools
     
 .. |coverage badge| image:: https://img.shields.io/endpoint?url=https://gist.githubusercontent.com/rbturnbull/40d96fabbe08e596d6cc876f8f40c1f9/raw/coverage-badge.json
     :target: https://rbturnbull.github.io/msstools/coverage/
+
+.. |doi badge| image:: https://www.fdr.uni-hamburg.de/badge/DOI/10.25592/uhhfdm.18367.svg
+    :target: https://doi.org/10.25592/uhhfdm.18367
     
 .. end-badges
 
@@ -216,7 +223,7 @@ Credits
 To if you use this software in your research, please cite the following article:
 
 Montoro, Peter, and Robert Turnbull. “Tools, Tricks, and Techniques: Managing the Manuscripts of Chrysostom’s Homilies on Romans.” Comparative Oriental Manuscript Studies Bulletin 11 (2025): 265–88.
-DOI: 10.25592/uhhfdm.18366
+DOI: `10.25592/uhhfdm.18366 <https://www.fdr.uni-hamburg.de/record/18367>`_
 
 .. code-block:: bibtex
 
