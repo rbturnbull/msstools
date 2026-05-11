@@ -222,8 +222,8 @@ Credits
 
 To if you use this software in your research, please cite the following article:
 
-Montoro, Peter, and Robert Turnbull. “Tools, Tricks, and Techniques: Managing the Manuscripts of Chrysostom’s Homilies on Romans.” Comparative Oriental Manuscript Studies Bulletin 11 (2025): 265–88.
-DOI: `10.25592/uhhfdm.18366 <https://www.fdr.uni-hamburg.de/record/18367>`_
+Montoro, Peter, and Robert Turnbull. “Tools, Tricks, and Techniques: Managing the Manuscripts of Chrysostom’s Homilies on Romans.” *Comparative Oriental Manuscript Studies Bulletin* 11 (2025): 265–88.
+DOI: `10.25592/uhhfdm.18366 <https://doi.org/10.25592/uhhfdm.18366>`_
 
 .. code-block:: bibtex
 
