@@ -65,6 +65,7 @@ Split image files into left and right parts (typically recto and verso pages), w
 - ``--overlap``: (Optional) Overlap percentage between split images (default: 10).
 - ``--start``: (Optional) The folio number for the first split image (default: 0).
 - ``--skip``: (Optional) Number of images to skip before splitting.
+- ``--duplicates``: (Optional) Folio number that appears more than once. Can be used multiple times.
 - ``--recto-verso / --no-recto-verso``: (Optional, default: ``--recto-verso``) Use 'r' and 'v' suffixes for recto and verso pages. Use ``--no-recto-verso`` to output sequential numbers instead.
 - ``--force``: (Optional) Overwrite existing output files if they already exist.
 
@@ -91,6 +92,10 @@ split, use ``--skip``; skipped images are copied as ``--0``, ``--1``, etc., so
 they sort before the main folio images and do not advance the folio numbering.
 For example, ``--start 0 --skip 3`` produces ``--0``, ``--1``, ``--2``,
 ``-f0v``, ``-f1r``, ...
+
+If a folio number appears twice in the manuscript, pass it with ``--duplicates``.
+For example, ``--duplicates 46`` writes the two occurrences as ``-f46rA`` /
+``-f46vA`` and ``-f46rB`` / ``-f46vB`` before continuing to ``-f47r``.
 
 **Example (sequential numbering):**
 

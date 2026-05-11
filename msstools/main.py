@@ -16,6 +16,7 @@ def split_images(
     margin_left: int = typer.Option(0, help="Margin to remove from the left side of the image before splitting"),
     margin_right: int = typer.Option(0, help="Margin to remove from the right side of the image before splitting"),
     force: bool = typer.Option(False, help="Force overwrite existing files"),
+    duplicates: list[int] | None = typer.Option(None, help="Folio numbers that appear more than once"),
 ):
     """
     Split an image into recto and verso parts.
@@ -32,6 +33,7 @@ def split_images(
         margin_right=margin_right,
         recto_verso=recto_verso,
         force=force,
+        duplicates=duplicates,
     )
 
 

@@ -178,6 +178,34 @@ def test_split_images_skip_does_not_advance_start_with_padding(tmp_path):
     assert (tmp_path / "book-f01r.jpg").exists()
 
 
+def test_split_images_duplicate_folio_labels(tmp_path):
+    images = [
+        create_test_image(tmp_path / f"page{i}.jpg", color=(i, i, i))
+        for i in range(4)
+    ]
+
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "book"),
+            *[str(image) for image in images],
+            "--start",
+            "44",
+            "--duplicates",
+            "46",
+            "--recto-verso",
+        ],
+    )
+    assert result.exit_code == 0
+
+    assert (tmp_path / "book-f46rA.jpg").exists()
+    assert (tmp_path / "book-f46vA.jpg").exists()
+    assert (tmp_path / "book-f46rB.jpg").exists()
+    assert (tmp_path / "book-f46vB.jpg").exists()
+    assert (tmp_path / "book-f47r.jpg").exists()
+
+
 def test_split_images_force_overwrite(tmp_path):
     img = create_test_image(tmp_path / "original.jpg", color=(10, 10, 10))
     out_prefix = tmp_path / "scan"
