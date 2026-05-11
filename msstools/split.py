@@ -26,14 +26,13 @@ def split_images(
     prefix = Path(prefix)
     prefix.parent.mkdir(parents=True, exist_ok=True)
 
-    for image_path in images:
+    for index, image_path in enumerate(images):
         suffix = image_path.suffix
-        if counter <= skip:
+        if index < skip:
             # copy image to final location without splitting
-            path = prefix.parent / f"{prefix.name}-{counter}{suffix}"
+            path = prefix.parent / f"{prefix.name}-{index}{suffix}"
             if not path.exists() or force:
-                shutil.copy(image_path, prefix.parent / f"{prefix.name}-{counter}{suffix}")
-            counter += 1
+                shutil.copy(image_path, path)
             continue
         
         print(f"Splitting {image_path.name}")
