@@ -28,7 +28,13 @@ Tools for Managing the Manuscripts of Chrysostom’s Homilies on Romans
 Installation
 ==================================
 
-To install (or update), use the following command:
+To install, use the following command:
+
+.. code-block:: bash
+
+    pip install msstools
+
+To install the latest development version, use:
 
 .. code-block:: bash
 
@@ -198,6 +204,22 @@ Credits
 - `Robert Turnbull <https://robturnbull.com>`_ 
 - Peter Montoro
 
+To if you use this software in your research, please cite the following article:
+
+Montoro, Peter, and Robert Turnbull. “Tools, Tricks, and Techniques: Managing the Manuscripts of Chrysostom’s Homilies on Romans.” Comparative Oriental Manuscript Studies Bulletin 11 (2025): 265–88.
+DOI: 10.25592/uhhfdm.18366
+
+.. code-block:: bibtex
+
+    @article{msstools,
+        author = {Montoro, Peter and Turnbull, Robert},
+        title = {{Tools, Tricks, and Techniques: Managing the Manuscripts of Chrysostom’s Homilies on Romans}},
+        year = {2025},
+        volume = {11},
+        pages = {265-288},
+        journal = {Comparative Oriental Manuscript Studies Bulletin},
+        doi = {10.25592/uhhfdm.18366}
+    }
 
 .. end-credits
 
