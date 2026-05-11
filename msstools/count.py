@@ -9,7 +9,7 @@ import svgwrite
 
 def greek_char_count(string:str) -> int:
     """Counts the number of Greek characters in a given string."""
-    chars = regex.findall( '\p{IsGreek}', string  )
+    chars = regex.findall(r'\p{IsGreek}', string)
     return len(chars)
 
 
@@ -77,7 +77,7 @@ def count_greek_chars(
 
     assert len(page_char_counts), f'No pages found in files with prefix {filename_prefix}'
 
-    plt.figure(figsize=(20,10))
+    fig, ax = plt.subplots(figsize=(20,10))
 
     vals = list(page_char_counts.values())
     mean = np.mean(vals)
@@ -110,16 +110,17 @@ def count_greek_chars(
             warning_annotations.append("")
 
     indexes = np.arange(len(labels))
-    plt.scatter(indexes, values, marker='o', edgecolor='red', facecolor='#00000000', linewidths=1)
+    ax.scatter(indexes, values, marker='o', edgecolor='red', facecolor='#00000000', linewidths=1)
 
     for outlier in warning_labels:
         index = labels.index(outlier)
-        plt.annotate(outlier, (indexes[index], values[index]))
+        ax.annotate(outlier, (indexes[index], values[index]))
 
-    plt.ylabel("Greek characters on folio side", horizontalalignment='right', y=1.0)
-    plt.xlabel("Folio side", horizontalalignment='right', x=1.0)
+    ax.set_ylabel("Greek characters on folio side", horizontalalignment='right', y=1.0)
+    ax.set_xlabel("Folio side", horizontalalignment='right', x=1.0)
+    ax.set_xticks(indexes + 0.5)
+    ax.set_xticklabels(x_labels)
 
-    plt.xticks(indexes + 0.5, x_labels)
     if show or output_path is None:
         plt.show()
 
@@ -127,8 +128,10 @@ def count_greek_chars(
         output_path = Path(output_path)
         if not output_path.parent.exists():
             output_path.parent.mkdir(parents=True, exist_ok=True)
-        plt.savefig(output_path, bbox_inches='tight')
+        fig.savefig(output_path, bbox_inches='tight')
         print("Saved plot to:", output_path)
+
+    plt.close(fig)
 
             
             
@@ -147,12 +150,12 @@ def read_sentence_counts( filename_prefix, start_homily = 0, end_homily = 32 ):
 
         data = f.read()
 
-        paragraphs = re.findall("\<P ([0-9]+)\>(.*?)\<\/P\>", data, re.MULTILINE|re.DOTALL)
+        paragraphs = re.findall(r"\<P ([0-9]+)\>(.*?)\<\/P\>", data, re.MULTILINE|re.DOTALL)
         for paragraph in paragraphs:
             paragraph_number = int(paragraph[0])
             paragraph_text = paragraph[1]
 
-            sentences = re.findall("\<S ([0-9]+)\>(.*?)\<\/S\>", paragraph_text, re.MULTILINE|re.DOTALL)
+            sentences = re.findall(r"\<S ([0-9]+)\>(.*?)\<\/S\>", paragraph_text, re.MULTILINE|re.DOTALL)
             for sentence in sentences:
                 sentence_number = int(sentence[0])
                 sentence_counts[homily_index][paragraph_number][sentence_number] = greek_char_count(sentence[1].strip())
