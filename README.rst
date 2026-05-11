@@ -22,7 +22,8 @@ MSS Tools
 
 .. start-quickstart
 
-Tools for Managing the Manuscripts of Chrysostom’s Homilies on Romans
+Tools for Managing the Manuscripts.
+Derived from Peter Montoro's thesis regarding of Chrysostom’s Homilies on Romans.
 
 
 Installation
@@ -62,7 +63,7 @@ Split image files into left and right parts (typically recto and verso pages), w
 - ``images``: One or more image files to be split.
 - ``--rtl``: (Optional) Split images in right-to-left direction.
 - ``--overlap``: (Optional) Overlap percentage between split images (default: 10).
-- ``--start``: (Optional) The folio number for the first image (default: 1).
+- ``--start``: (Optional) The folio number for the first split image (default: 0).
 - ``--skip``: (Optional) Number of images to skip before splitting.
 - ``--recto-verso / --no-recto-verso``: (Optional, default: ``--recto-verso``) Use 'r' and 'v' suffixes for recto and verso pages. Use ``--no-recto-verso`` to output sequential numbers instead.
 - ``--force``: (Optional) Overwrite existing output files if they already exist.
@@ -77,10 +78,19 @@ This will create the following files:
 
 .. code-block:: 
     
-    output/page-10v.jpg
-    output/page-11r.jpg
-    output/page-11v.jpg
-    output/page-12r.jpg
+    output/page-f10v.jpg
+    output/page-f11r.jpg
+    output/page-f11v.jpg
+    output/page-f12r.jpg
+
+With the default ``--start 0``, the first split folio is ``0v`` and the second
+is ``1r`` (written as ``-f0v`` and ``-f1r`` in filenames). This is useful when
+the first scanned image is a front cover or other material before the main
+manuscript foliation begins. If you have preamble images that should not be
+split, use ``--skip``; skipped images are copied as ``--0``, ``--1``, etc., so
+they sort before the main folio images and do not advance the folio numbering.
+For example, ``--start 0 --skip 3`` produces ``--0``, ``--1``, ``--2``,
+``-f0v``, ``-f1r``, ...
 
 **Example (sequential numbering):**
 
@@ -92,10 +102,10 @@ This will create the following files:
 
 .. code-block:: 
 
-    output/page-5.jpg
-    output/page-6.jpg
-    output/page-7.jpg
-    output/page-8.jpg
+    output/page-f5.jpg
+    output/page-f6.jpg
+    output/page-f7.jpg
+    output/page-f8.jpg
 
 remove-accents
 ^^^^^^^^^^^^^^
@@ -222,4 +232,3 @@ DOI: 10.25592/uhhfdm.18366
     }
 
 .. end-credits
-

@@ -8,7 +8,7 @@ def split_images(
     images: list[Path],
     rtl: bool = False,
     overlap: float = 10.0,
-    start: int = 1,
+    start: int = 0,
     skip: int = 0,
     recto_verso: bool = True,
     margin_left: int = 0,
@@ -36,11 +36,10 @@ def split_images(
         suffix = image_path.suffix
         if index < skip:
             # copy image to final location without splitting
-            page_number = _format_number(counter, padding_width)
-            path = prefix.parent / f"{prefix.name}-{page_number}{suffix}"
+            page_number = _format_number(index, padding_width)
+            path = prefix.parent / f"{prefix.name}--{page_number}{suffix}"
             if not path.exists() or force:
                 shutil.copy(image_path, path)
-            counter += 1
             continue
 
         print(f"Splitting {image_path.name}")
@@ -66,13 +65,13 @@ def split_images(
 
             verso_number = _format_number(counter, padding_width)
             verso_path = (
-                prefix.parent / f"{prefix.name}-{verso_number}{verso_marker}{suffix}"
+                prefix.parent / f"{prefix.name}-f{verso_number}{verso_marker}{suffix}"
             )
             print("\tVerso", verso_path)
             counter += 1
             recto_number = _format_number(counter, padding_width)
             recto_path = (
-                prefix.parent / f"{prefix.name}-{recto_number}{recto_marker}{suffix}"
+                prefix.parent / f"{prefix.name}-f{recto_number}{recto_marker}{suffix}"
             )
             print("\tRecto", recto_path)
 
@@ -89,21 +88,14 @@ def _number_width(start: int, images_count: int, skip: int, recto_verso: bool) -
     """
     Return the width needed to zero-pad all output page numbers for a run.
     """
-    counter = start
-    highest_number = start
+    split_count = max(0, images_count - skip)
+    highest_number = max(start, skip - 1)
 
-    for index in range(images_count):
-        if index < skip:
-            highest_number = max(highest_number, counter)
-            counter += 1
-            continue
-
-        highest_number = max(highest_number, counter)
-        counter += 1
-        highest_number = max(highest_number, counter)
-
-        if not recto_verso:
-            counter += 1
+    if split_count:
+        if recto_verso:
+            highest_number = max(highest_number, start + split_count)
+        else:
+            highest_number = max(highest_number, start + (split_count * 2) - 1)
 
     return len(str(highest_number))
 

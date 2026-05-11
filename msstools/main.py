@@ -10,7 +10,7 @@ def split_images(
     images: list[Path] = typer.Argument(..., help="List of image files to be split"),
     rtl: bool = typer.Option(False, help="Split images in right-to-left direction"),
     overlap: float = typer.Option(10, help="Overlap percentage between split images"),
-    start: int = typer.Option(1, help="The folio number for the first image"),
+    start: int = typer.Option(0, help="The folio number for the first split image"),
     skip: int = typer.Option(0, help="Number of pages to skip before splitting"),
     recto_verso: bool = typer.Option(True, help="Use 'r' and 'v' suffixes for recto and verso pages. Otherwise it uses sequential pagination."),
     margin_left: int = typer.Option(0, help="Margin to remove from the left side of the image before splitting"),
