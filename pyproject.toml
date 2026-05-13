@@ -25,6 +25,8 @@ typer = ">=0.16.0"
 regex = ">=2024.11.6"
 matplotlib = ">=3.10.3"
 svgwrite = ">=1.4.3"
+img2pdf = "^0.6.3"
+pikepdf = "^10.5.1"
 
 [tool.poetry.group.dev.dependencies]
 pytest = ">=6.2.5"

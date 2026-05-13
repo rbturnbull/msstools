@@ -119,3 +119,19 @@ def csv_to_tei(
         dates=dates,
         max_readings=max_readings,
     )
+
+
+@app.command()
+def combine(
+    image_paths: list[Path] = typer.Argument(..., help="List of image paths to combine into a PDF"),
+    output_pdf: Path = typer.Argument(..., help="Path to the output PDF file"),
+    strip_pattern: str = typer.Option("", help="Optional regex pattern to ignore in folio labels"),
+):
+    """ Combine a list of images into a PDF with an outline based on the image filenames."""
+    from msstools.combine import create_pdf
+
+    create_pdf(
+        image_paths=image_paths,
+        output_pdf=output_pdf,
+        strip_pattern=strip_pattern,
+)
