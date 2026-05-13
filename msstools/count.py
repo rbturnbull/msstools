@@ -95,13 +95,6 @@ def count_greek_chars(
 
     labels, values = zip(*page_char_counts.items())
 
-    x_labels = []
-    for index, label in enumerate(labels):
-        if index % 20 == 0:
-            x_labels.append(label)
-        else:
-            x_labels.append("")
-
     warning_annotations = []
     for index, label in enumerate(labels):
         if label in warning_labels:
@@ -118,8 +111,18 @@ def count_greek_chars(
 
     ax.set_ylabel("Greek characters on folio side", horizontalalignment='right', y=1.0)
     ax.set_xlabel("Folio side", horizontalalignment='right', x=1.0)
-    ax.set_xticks(indexes + 0.5)
-    ax.set_xticklabels(x_labels)
+    ax.tick_params(axis="x", bottom=False, labelbottom=False)
+    for index, label in enumerate(labels):
+        if index % 20 == 0:
+            ax.text(
+                indexes[index],
+                -0.02,
+                label,
+                ha="right",
+                va="top",
+                rotation=90,
+                transform=ax.get_xaxis_transform(),
+            )
 
     if show or output_path is None:
         plt.show()

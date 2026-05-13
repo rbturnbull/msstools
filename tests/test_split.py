@@ -110,6 +110,22 @@ def test_split_images_recto_anchor_with_padded_indexes(tmp_path):
     assert (tmp_path / "book-6-50r.jpg").exists()
 
 
+def test_split_images_ignore(tmp_path):
+    images = [
+        create_test_image(tmp_path / f"page{i}.jpg", color=(i, i, i))
+        for i in range(3)
+    ]
+
+    split_images(tmp_path / "book", images, ignore={"page1.jpg"})
+
+    assert (tmp_path / "book-0.jpg").exists()
+    assert (tmp_path / "book-1.jpg").exists()
+    assert (tmp_path / "book-2.jpg").exists()
+    assert (tmp_path / "book-3.jpg").exists()
+    assert not (tmp_path / "book-4.jpg").exists()
+    assert not (tmp_path / "book-5.jpg").exists()
+
+
 def test_split_images_removes_margins_before_splitting(tmp_path):
     img = create_margin_test_image(tmp_path / "page.png")
 

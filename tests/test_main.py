@@ -97,6 +97,30 @@ def test_split_images_command(tmp_path):
     assert (tmp_path / "split-1-49r.jpg").exists()
 
 
+def test_split_images_command_ignore(tmp_path):
+    image1 = create_test_image(tmp_path / "page1.jpg")
+    image2 = create_test_image(tmp_path / "page2.jpg", color=(0, 255, 0))
+
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "split"),
+            str(image1),
+            str(image2),
+            "--ignore",
+            "page1.jpg",
+        ],
+    )
+
+    assert result.exit_code == 0
+    assert "Skipping page1.jpg (in ignore list)" in result.stdout
+    assert (tmp_path / "split-0.jpg").exists()
+    assert (tmp_path / "split-1.jpg").exists()
+    assert not (tmp_path / "split-2.jpg").exists()
+    assert not (tmp_path / "split-3.jpg").exists()
+
+
 def test_split_images_command_rejects_invalid_recto_anchor(tmp_path):
     image = create_test_image(tmp_path / "page.jpg")
 

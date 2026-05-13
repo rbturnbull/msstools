@@ -15,6 +15,7 @@ def split_images(
     margin_right: int = typer.Option(0, help="Margin to remove from the right side of the image before splitting"),
     force: bool = typer.Option(False, help="Force overwrite existing files"),
     recto: list[str] | None = typer.Option(None, help="Recto folio anchors in the form FILENAME=FOLIO"),
+    ignore: list[str] | None = typer.Option(None, help="List of image filenames to ignore"),
 ):
     """
     Split an image into recto and verso parts.
@@ -30,6 +31,7 @@ def split_images(
         margin_right=margin_right,
         force=force,
         recto=recto,
+        ignore=ignore,
     )
 
 

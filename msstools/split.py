@@ -13,6 +13,7 @@ def split_images(
     margin_right: int = 0,
     force: bool = False,
     recto: list[str] | None = None,
+    ignore: list[str]| set[str] | None = None,
 ):
     """
     Split images into left and right parts.
@@ -25,6 +26,8 @@ def split_images(
     prefix = Path(prefix)
     prefix.parent.mkdir(parents=True, exist_ok=True)
 
+    ignore = set(ignore) if ignore is not None else set()
+
     for image_index, image_path in enumerate(images):
         suffix = image_path.suffix
         if image_index < skip:
@@ -32,6 +35,10 @@ def split_images(
             if not path.exists() or force:
                 shutil.copy(image_path, path)
             output_index += 1
+            continue
+
+        if image_path.name in ignore:
+            print(f"Skipping {image_path.name} (in ignore list)")
             continue
 
         print(f"Splitting {image_path.name}")
