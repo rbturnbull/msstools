@@ -12,6 +12,18 @@ def create_test_image(path: Path, width=200, height=100, color=(255, 0, 0)):
     return path
 
 
+def create_margin_test_image(path: Path) -> Path:
+    img = Image.new("RGB", (100, 20), (255, 0, 0))
+    for x in range(10, 50):
+        for y in range(20):
+            img.putpixel((x, y), (0, 255, 0))
+    for x in range(50, 90):
+        for y in range(20):
+            img.putpixel((x, y), (0, 0, 255))
+    img.save(path)
+    return path
+
+
 def test_split_images_ltr(tmp_path):
     img1 = create_test_image(tmp_path / "page1.jpg")
     img2 = create_test_image(tmp_path / "page2.jpg", color=(0, 255, 0))
@@ -157,6 +169,56 @@ def test_split_images_recto_anchor_with_padded_indexes(tmp_path):
     assert (tmp_path / "book-4-49r.jpg").exists()
     assert (tmp_path / "book-5-49v.jpg").exists()
     assert (tmp_path / "book-6-50r.jpg").exists()
+
+
+def test_split_images_removes_margins_before_splitting(tmp_path):
+    img = create_margin_test_image(tmp_path / "page.png")
+
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "out"),
+            str(img),
+            "--overlap",
+            "0",
+            "--margin-left",
+            "10",
+            "--margin-right",
+            "10",
+        ],
+    )
+    assert result.exit_code == 0
+
+    with Image.open(tmp_path / "out-0.png") as verso_img:
+        assert verso_img.size == (40, 20)
+        assert verso_img.getpixel((0, 0)) == (0, 255, 0)
+        assert verso_img.getpixel((39, 19)) == (0, 255, 0)
+
+    with Image.open(tmp_path / "out-1.png") as recto_img:
+        assert recto_img.size == (40, 20)
+        assert recto_img.getpixel((0, 0)) == (0, 0, 255)
+        assert recto_img.getpixel((39, 19)) == (0, 0, 255)
+
+
+def test_split_images_rejects_invalid_recto_anchor(tmp_path):
+    img = create_test_image(tmp_path / "page.jpg")
+
+    result = runner.invoke(
+        app,
+        [
+            "split-images",
+            str(tmp_path / "book"),
+            str(img),
+            "--recto",
+            "page.jpg",
+        ],
+    )
+
+    assert result.exit_code != 0
+    assert "Invalid recto reference 'page.jpg'. Expected FILENAME=FOLIO." in str(
+        result.exception
+    )
 
 
 def test_split_images_force_overwrite(tmp_path):

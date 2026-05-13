@@ -4,6 +4,7 @@ import pikepdf
 import pytest
 from PIL import Image
 
+import msstools.combine
 from msstools.combine import create_pdf
 
 
@@ -49,3 +50,23 @@ def test_create_pdf_strips_pattern_from_outline_labels(tmp_path):
 def test_create_pdf_rejects_empty_image_list(tmp_path):
     with pytest.raises(ValueError, match="No image paths provided"):
         create_pdf([], tmp_path / "output.pdf")
+
+
+def test_create_pdf_raises_when_pdf_page_count_mismatches_images(
+    tmp_path,
+    monkeypatch,
+):
+    images = [
+        create_test_image(tmp_path / "folio-001r.jpg", color=(255, 0, 0)),
+        create_test_image(tmp_path / "folio-001v.jpg", color=(0, 255, 0)),
+    ]
+    one_page_pdf = msstools.combine.img2pdf.convert([str(images[0])])
+
+    monkeypatch.setattr(
+        msstools.combine.img2pdf,
+        "convert",
+        lambda image_paths: one_page_pdf,
+    )
+
+    with pytest.raises(RuntimeError, match="Expected 2 pages, got 1."):
+        create_pdf(images, tmp_path / "output.pdf")
