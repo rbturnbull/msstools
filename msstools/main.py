@@ -135,3 +135,33 @@ def combine(
         output_pdf=output_pdf,
         strip_pattern=strip_pattern,
 )
+    
+
+@app.command()
+def cite():
+    """ 
+    Display the citation for this software. If you use this software in your research, please cite the article.
+    """
+    from rich import print
+
+    print(
+        "Montoro, Peter, and Robert Turnbull. [green]“Tools, Tricks, and Techniques: Managing the Manuscripts of Chrysostom’s Homilies on Romans.”[/] " \
+        "[red]Comparative Oriental Manuscript Studies Bulletin[/] 11 (2025): 265–88. [purple]DOI: 10.25592/uhhfdm.18366[/]",
+    )
+
+
+@app.command()
+def bibtex():
+    """ Display the BibTeX entry for this software."""
+    from rich import print
+
+    bibtex = Path(__file__).parent / "msstools.bib"
+    print(bibtex.read_text(encoding='utf-8'))
+
+
+@app.command()
+def version():
+    """ Display the version of this software. """
+    from importlib.metadata import version
+    from rich import print
+    print(version("msstools"))
